@@ -2,11 +2,49 @@
 
 int main(int argc, char **argv){
 
-    // if (argc != 3)
-    //     return 1;
-    (void)argc; (void)argv;
+    if (argc != 2) return 1;
 
+    (void)argc;
+
+    int sockfd, newsockfd, port_nbr;
+
+    char buffer[255];
+
+    struct sockaddr_in server_addr, client_addr;
+
+    socklen_t client_size;
+
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0) return 1;
     
+    bzero((char *) &server_addr, sizeof(server_addr));
+
+    port_nbr = std::atoi(argv[1]);
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(port_nbr);
+
+    if (bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0)
+        return 1;
+
+    if (listen(sockfd, 5) < 0)
+        return 1;
+
+    client_size = sizeof(client_addr);
+
+    newsockfd = accept(sockfd, (struct sockaddr *) &client_addr, &client_size);
+    if (newsockfd < 0) return 1;
+
+    while (1){
+        if (read(newsockfd, buffer, 255) < 0) return 1;
+        std::cout << buffer << std::flush;
+        std::cin >> buffer;
+        std::string buffeer = buffer;
+        buffeer += "\n";
+        if (write(newsockfd, buffeer.c_str(), strlen(buffeer.c_str())) < 0)
+            return 1;
+    }
 
     return (0);
 }

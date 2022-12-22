@@ -9,7 +9,7 @@ HEADERS = server.hpp
 all : $(NAME)
 
 $(NAME) : $(SOURCES) $(HEADERS)
-	@c++ $(SOURCES) -Wall -Wextra -Werror -std=c++98 -o $(NAME)
+	@c++ $(SOURCES) -std=c++98 -o $(NAME)
 
 clean :
 	@rm -rf $(NAME)
