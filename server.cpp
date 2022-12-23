@@ -3,8 +3,7 @@
 int main(int argc, char **argv){
 
     if (argc != 2) return 1;
-
-    (void)argc;
+    
 
     int sockfd, newsockfd, port_nbr;
 
@@ -30,20 +29,19 @@ int main(int argc, char **argv){
 
     if (listen(sockfd, 5) < 0)
         return 1;
-
     client_size = sizeof(client_addr);
 
     newsockfd = accept(sockfd, (struct sockaddr *) &client_addr, &client_size);
     if (newsockfd < 0) return 1;
 
     while (1){
+        bzero(buffer, 255);
         if (read(newsockfd, buffer, 255) < 0) return 1;
-        std::cout << buffer << std::flush;
-        std::cin >> buffer;
-        std::string buffeer = buffer;
-        buffeer += "\n";
-        if (write(newsockfd, buffeer.c_str(), strlen(buffeer.c_str())) < 0)
-            return 1;
+        std::cout << buffer;
+        bzero(buffer, 255);
+        // fgets(buffer, 255, stdin);
+        // if (write(newsockfd, buffer, strlen(buffer)) < 0)
+        //     return 1;
     }
 
     return (0);
