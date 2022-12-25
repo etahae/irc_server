@@ -21,24 +21,44 @@ int main(int argc, char **argv){
     port_nbr = std::atoi(argv[1]);
 
     server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     server_addr.sin_port = htons(port_nbr);
 
     if (bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0)
         return 1;
 
-    if (listen(sockfd, 5) < 0)
+    if (listen(sockfd, 10) < 0)
         return 1;
+
     client_size = sizeof(client_addr);
 
-    newsockfd = accept(sockfd, (struct sockaddr *) &client_addr, &client_size);
-    if (newsockfd < 0) return 1;
+    fd_set curr_sock, ready_sock;
+    FD_ZERO(&curr_sock);
+    FD_SET(sockfd, &curr_sock);
 
     while (1){
-        bzero(buffer, 255);
-        if (read(newsockfd, buffer, 255) < 0) return 1;
-        std::cout << buffer;
-        bzero(buffer, 255);
+        ready_sock = curr_sock;
+         
+        if (select(FD_SETSIZE, &ready_sock, 0, 0, 0) < 0) return 1;
+        for (int i = 0; i < FD_SETSIZE; i++){
+            if (FD_ISSET(i, &ready_sock)){
+                if (i == sockfd){
+                    newsockfd = accept(sockfd, (struct sockaddr *) &client_addr, &client_size);
+                    if (newsockfd < 0) return 1;
+                    FD_SET(newsockfd, &curr_sock);
+                }
+                else{
+                    bzero(buffer, 255);
+                    if (read(newsockfd, buffer, 255) < 0) return 1;
+                    std::cout << buffer;
+                    FD_CLR(i, &curr_sock);
+                }
+            }
+        }
+        // bzero(buffer, 255);
+        // if (read(newsockfd, buffer, 255) < 0) return 1;
+        // std::cout << buffer;
+        // bzero(buffer, 255);
         // fgets(buffer, 255, stdin);
         // if (write(newsockfd, buffer, strlen(buffer)) < 0)
         //     return 1;
