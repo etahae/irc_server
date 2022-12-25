@@ -2,4 +2,4 @@
 
 An internet relay chat server
 
-run : $> make && ./ircserv <port> <password>
+run : $> make && ./ircserv "port" "password"
