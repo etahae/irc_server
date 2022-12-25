@@ -1,12 +1,18 @@
 #include "server.hpp"
 #include <vector>
 
+int fatal_error(std::string msg){
+	std::cerr << "error: " << msg << std::endl;
+	return EXIT_FAILURE;
+}
+
 int main(int argc, char **argv){
 
 	if (argc != 2) return 1;
-	
 
-	int sockfd, newsockfd[10], port_nbr;
+	int server_socket, port_nbr;
+
+	std::vector<int> clients_sockets;
 
 	char buffer[255];
 
@@ -14,8 +20,8 @@ int main(int argc, char **argv){
 
 	socklen_t client_size;
 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd < 0) return 1;
+	server_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if (server_socket < 0) return (fatal_error("socket failure"));
 	
 	bzero((char *) &server_addr, sizeof(server_addr));
 
@@ -24,62 +30,60 @@ int main(int argc, char **argv){
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	server_addr.sin_port = htons(port_nbr);
-
-	if (bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0)
-		return 1;
-
-	if (listen(sockfd, 10) < 0)
-		return 1;
+;
+	if (bind(server_socket, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0)
+		return (fatal_error("bind failure"));
+	if (listen(server_socket, 5) < 0) return (fatal_error("listen failure"));
 
 	fd_set curr_sock, ready_sock;
 	FD_ZERO(&curr_sock);
-	FD_SET(sockfd, &curr_sock);
-	static int connection_num = 0;
+	FD_SET(server_socket, &curr_sock);
+
 	while (1){
 		ready_sock = curr_sock;
 		if (select(FD_SETSIZE, &ready_sock, 0, 0, 0) < 0) return 1;
 		for (int i = 0; i < FD_SETSIZE; i++){
 			if (FD_ISSET(i, &ready_sock)){
-				if (i == sockfd){
-				std::cout << i << std::endl;
+				if (i == server_socket){
 					client_size = sizeof(client_addr);
-					newsockfd[connection_num] = accept(sockfd, (struct sockaddr *) &client_addr, &client_size);
-					if (newsockfd[connection_num] < 0) return 1;
-					FD_SET(newsockfd[connection_num], &curr_sock);
-					connection_num++;
+					int acc = accept(server_socket, (struct sockaddr *) &client_addr, &client_size);
+					if (acc < 0) return (fatal_error("accept failure"));
+					FD_SET(acc, &curr_sock);
+					clients_sockets.push_back(acc);
 				}
 				else{
-					std::cout << i;
-					// std::cout << newsockfd;
 					bzero(buffer, 255);
 					int n;
-					if ((n = read(newsockfd[i - 4], buffer, 255)) < 0) return 1;
-					// if (n == 0)
-					// 	break ;
-					std::cout << buffer;
-					// FD_CLR(i, &curr_sock);
+					if ((n = read(clients_sockets[i - 4], buffer, 255)) < 0) return 1;
+					std::cout << buffer << std::flush;
+					if (!strncmp(buffer, "bye", 3))
+					{
+						// for (std::vector<int>::iterator it = clients_sockets.begin(); it != clients_sockets.end(); it++)
+						// 	if (*it == clients_sockets[i - 4])
+						clients_sockets.pop_back();
+						FD_CLR(i, &curr_sock);
+					}
 				}
 			}
 		}
 		// bzero(buffer, 255);
-		// if (read(newsockfd, buffer, 255) < 0) return 1;
+		// if (read(newserver_socket, buffer, 255) < 0) return 1;
 		// std::cout << buffer;
 		// bzero(buffer, 255);
 		// fgets(buffer, 255, stdin);
-		// if (write(newsockfd, buffer, strlen(buffer)) < 0)
+		// if (write(newserver_socket, buffer, strlen(buffer)) < 0)
 		//     return 1;
 	}
-
 	return (0);
 }
 
-//socket function returns int sockfd : takes three parameters : 
+//socket function returns int server_socket : takes three parameters : 
 	// first one : int domain : AF_INET (ipv4)
 	// second one : int type : sock_stream (TCP)
 	// third one : int protocol : 0 (default tcp protocol)
 
 //bind function returns 0 succes , -1 failure : take three parameters :
-	// first one : int sockfd
+	// first one : int server_socket
 	// second one : struct sockaddr *
 	// third one :  socklen_t (size of sockaddr)
 
@@ -87,11 +91,11 @@ int main(int argc, char **argv){
 //                   char sa_data[14]; }
 
 //listen function returns 0 succes , -1 failure : takes two parameters :
-	// first one : int sockfd
+	// first one : int server_socket
 	//second one : the max connections allowed in the server
 
 //accept function returns : take three parameters :
-	// first one : int sockfd
+	// first one : int server_socket
 	// second one : (struct sockaddr *) & addr
 	// third  one : & socklen
 	// (waits for the connection function in the client to connect)
