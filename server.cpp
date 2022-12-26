@@ -21,6 +21,7 @@ int main(int argc, char **argv){
 	socklen_t client_size;
 
 	server_socket = socket(AF_INET, SOCK_STREAM, 0);
+						//  IPV4,   TCP ,     tcp default
 	if (server_socket < 0) return (fatal_error("socket failure"));
 	
 	bzero((char *) &server_addr, sizeof(server_addr));
@@ -29,32 +30,41 @@ int main(int argc, char **argv){
 
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	server_addr.sin_port = htons(port_nbr);
+	server_addr.sin_port = htons(port_nbr);	 //host to network short. The htons() function converts the unsigned short integer port_nbr from host byte order to network byte order.
 ;
 	if (bind(server_socket, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0)
 		return (fatal_error("bind failure"));
-	if (listen(server_socket, 5) < 0) return (fatal_error("listen failure"));
+	if (listen(server_socket, 5) < 0)	//server_socket got detected only if a new member had joined
+		return (fatal_error("listen failure"));
 
 	fd_set curr_sock, ready_sock;
-	FD_ZERO(&curr_sock);
-	FD_SET(server_socket, &curr_sock);
+	FD_ZERO(&curr_sock);	//initialize the struct with NULL
+	FD_SET(server_socket, &curr_sock);	//dup2 server_socket
 
-	while (1){
-		ready_sock = curr_sock;
-		if (select(FD_SETSIZE, &ready_sock, 0, 0, 0) < 0) return 1;
+	while (1)
+	{
+		ready_sock = curr_sock;	//save the file descriptor cause select is destructive
+				//maximum_FD's, read_fd,write_fd,errors, timeout
+		if (select(FD_SETSIZE, &ready_sock, 0, 0, 0) < 0)
+			return fatal_error("select failed to manage file descriptor");
 		for (int i = 0; i < FD_SETSIZE; i++){
-			if (FD_ISSET(i, &ready_sock)){
-				if (i == server_socket){
+			if (FD_ISSET(i, &ready_sock))//check if the fd is set by select
+			{
+				if (i == server_socket)//check if fd 'i' is our socket fd that's telling us that there's a new connection to accept
+				{
 					client_size = sizeof(client_addr);
 					int acc = accept(server_socket, (struct sockaddr *) &client_addr, &client_size);
-					if (acc < 0) return (fatal_error("accept failure"));
+					if (acc < 0)
+						return (fatal_error("accept failure"));
 					FD_SET(acc, &curr_sock);
-					clients_sockets.push_back(acc);
+					clients_sockets.push_back(acc);//push the new Client_FD to vector
 				}
-				else{
+				else
+				{
 					bzero(buffer, 255);
 					int n;
-					if ((n = read(clients_sockets[i - 4], buffer, 255)) < 0) return 1;
+					if ((n = read(clients_sockets[i - 4], buffer, 255)) < 0)
+						return fatal_error("Failed to read.");
 					std::cout << buffer << std::flush;
 					if (!strncmp(buffer, "bye", 3))
 					{
