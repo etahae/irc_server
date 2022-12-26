@@ -1,7 +1,8 @@
 #pragma once
 
 #define WELCOME_MSG "\n\t🔨 \033[0;37mWҽʅƈσɱҽ TӨ Rαɠɳαɾöƙ 🔨\033[0m\n\n"
-#define VERIFIED "\n\033[0;32m Connected \033[0m\n"
+// #define VERIFIED "\n\033[0;32m Connected \033[0m\n"
+#define VERIFIED "\033[0;32m • \033[0m"
 
 #include"client.hpp"
 
@@ -46,7 +47,6 @@ class Server{
 
 		int	client_verifying(char * cmd, Client * client)
 		{
-			cout << "*" << (int)*cmd << "*" <<endl;
 			if (!cmd || *cmd == 0)
 				return 0;
 			char *token;
