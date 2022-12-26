@@ -1,8 +1,11 @@
 #include "server.hpp"
 
+
 int main(int argc, char **argv){
 
 	Server server;
+	Client client;
+
 	if (argc != 3)
 		return (server.fatal_error("Usage: $> ./ircserv <port> <password>"));
 	if (server.init_server(argv) < 0)
@@ -27,12 +30,12 @@ int main(int argc, char **argv){
 					int acc = accept(server._socket, (struct sockaddr *) &client_addr, &client_size);
 					if (acc < 0) return (server.fatal_error("accept failure"));
 					FD_SET(acc, &_socket);
-					server.clients_sockets.push_back(acc);
+					server.clients_sockets.push_back(Client(acc, client_addr));
 				}
 				else{
 					bzero(buffer, 255);
 					int n;
-					if ((n = read(server.clients_sockets[i - 4], buffer, ARG_MAX)) < 0) return 1;
+					if ((n = read(server.clients_sockets[i - 4].fd_socket, buffer, ARG_MAX)) < 0) return 1;
 					std::cout << buffer << std::flush;
 					if (!strncmp(buffer, "bye", 3)){
 						server.clients_sockets.pop_back();
