@@ -32,6 +32,7 @@ int main(int argc, char **argv){
 					if (acc < 0) return (server.fatal_error("accept failure"));
 					FD_SET(acc, &_socket);
 					server.clients.push_back(Client(acc, client_addr));
+					write(acc, WELCOME_MSG, strlen(WELCOME_MSG));
 				}
 				else{
 					bzero(buffer, 255);

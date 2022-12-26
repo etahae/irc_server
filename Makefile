@@ -1,6 +1,6 @@
 NAME = ircserv
 
-SOURCES = server.cpp main.cpp
+SOURCES = main.cpp
 
 HEADERS = server.hpp
 

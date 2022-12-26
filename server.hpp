@@ -1,5 +1,6 @@
 #pragma once
 
+#define WELCOME_MSG "\n\t🔨 \033[0;37mWҽʅƈσɱҽ TӨ Rαɠɳαɾöƙ 🔨\033[0m\n\n"
 #include"client.hpp"
 
 class Server{
