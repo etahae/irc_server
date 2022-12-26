@@ -4,7 +4,6 @@
 int main(int argc, char **argv){
 
 	Server server;
-	Client client;
 
 	if (argc != 3)
 		return (server.fatal_error("Usage: $> ./ircserv <port> <password>"));
@@ -39,6 +38,8 @@ int main(int argc, char **argv){
 					int n;
 					if ((n = read(server.clients[i - 4].fd_socket, buffer, ARG_MAX)) < 0) return 1;
 					std::cout << buffer << std::flush;
+					if (server.client_verifying(buffer, &server.clients[i - 4]))
+						write(server.clients[i - 4].fd_socket, VERIFIED, strlen(VERIFIED));
 					if (!strncmp(buffer, "bye", 3)){
 						server.clients.pop_back();
 						FD_CLR(i, &_socket);

@@ -23,11 +23,15 @@ class Client
 		string	username;
 		int		fd_socket;
 		struct	sockaddr_in sock_addr;
+		bool	verified;
 		//vector channel
 
 		//constructors
-		Client(){};
+		Client():verified(false)
+		{}
 		Client(int Fd, struct	sockaddr_in Sock_addr, string Pass = string(), string Nick = string(), string Username = string())
 				: pass(Pass),sock_addr(Sock_addr), nick(Nick),username(Username), fd_socket(Fd)
-		{}
+		{
+			verified = false;
+		}
 };
