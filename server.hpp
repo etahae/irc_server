@@ -46,6 +46,7 @@ class Server{
 
 		int	client_verifying(char * cmd, Client * client)
 		{
+			cout << "*" << (int)*cmd << "*" <<endl;
 			if (!cmd || *cmd == 0)
 				return 0;
 			char *token;

@@ -37,12 +37,15 @@ int main(int argc, char **argv){
 					bzero(buffer, 255);
 					int n;
 					if ((n = read(server.clients[i - 4].fd_socket, buffer, ARG_MAX)) < 0) return 1;
-					std::cout << buffer << std::flush;
-					if (server.client_verifying(buffer, &server.clients[i - 4]))
-						write(server.clients[i - 4].fd_socket, VERIFIED, strlen(VERIFIED));
-					if (!strncmp(buffer, "bye", 3)){
-						server.clients.pop_back();
-						FD_CLR(i, &_socket);
+					if (n > 0)
+					{
+						std::cout << buffer << std::flush;
+						if (server.client_verifying(buffer, &server.clients[i - 4]))
+							write(server.clients[i - 4].fd_socket, VERIFIED, strlen(VERIFIED));
+						if (!strncmp(buffer, "bye", 3)){
+							server.clients.pop_back();
+							FD_CLR(i, &_socket);
+						}
 					}
 					// std::cin >> buffer;
 					// for (size_t i = 0; i < server.clients.size(); i++)
