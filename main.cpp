@@ -8,13 +8,13 @@ int main(int argc, char **argv){
 
 	if (argc != 3)
 		return (server.fatal_error("Usage: $> ./ircserv <port> <password>"));
-	if (server.init_server(argv) < 0)
+	if (server.init_server(argv))
 		return EXIT_FAILURE;
 
 	struct sockaddr_in client_addr;
 	socklen_t client_size;
 
-	fd_set _socket, tmp_socket;
+	fd_set _socket, tmp_socket, w_socket, tmp_w_socket;
 	FD_ZERO(&_socket);
 	FD_SET(server._socket, &_socket);
 
@@ -22,6 +22,7 @@ int main(int argc, char **argv){
 
 	while (1){
 		tmp_socket = _socket;
+		// tmp_w_socket = w_socket;
 		if (select(FD_SETSIZE, &tmp_socket, 0, 0, 0) < 0) return 1;
 		for (int i = 0; i < FD_SETSIZE; i++){
 			if (FD_ISSET(i, &tmp_socket)){
@@ -30,17 +31,22 @@ int main(int argc, char **argv){
 					int acc = accept(server._socket, (struct sockaddr *) &client_addr, &client_size);
 					if (acc < 0) return (server.fatal_error("accept failure"));
 					FD_SET(acc, &_socket);
-					server.clients_sockets.push_back(Client(acc, client_addr));
+					server.clients.push_back(Client(acc, client_addr));
 				}
 				else{
 					bzero(buffer, 255);
 					int n;
-					if ((n = read(server.clients_sockets[i - 4].fd_socket, buffer, ARG_MAX)) < 0) return 1;
+					if ((n = read(server.clients[i - 4].fd_socket, buffer, ARG_MAX)) < 0) return 1;
 					std::cout << buffer << std::flush;
 					if (!strncmp(buffer, "bye", 3)){
-						server.clients_sockets.pop_back();
+						server.clients.pop_back();
 						FD_CLR(i, &_socket);
 					}
+					// std::cin >> buffer;
+					// for (size_t i = 0; i < server.clients.size(); i++)
+					// {
+					// 	write(server.clients[i].fd_socket, "buffer", 7);
+					// }
 				}
 			}
 		}
