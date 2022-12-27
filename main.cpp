@@ -15,14 +15,14 @@ int main(int argc, char **argv){
 
 	fd_set _socket, tmp_socket, w_socket, tmp_w_socket;
 	FD_ZERO(&_socket);
-	FD_SET(server._socket, &_socket);
+	FD_SET(server._socket, &_socket);	//this to read from client sockets and accept them
 
 	char buffer[ARG_MAX];
 
 	while (1){
 		tmp_socket = _socket;
-		// tmp_w_socket = w_socket;
-		if (select(FD_SETSIZE, &tmp_socket, 0, 0, 0) < 0) return 1;
+		tmp_w_socket = w_socket;
+		if (select(FD_SETSIZE, &tmp_socket, &tmp_w_socket, 0, 0) < 0) return 1;
 		for (int i = 0; i < FD_SETSIZE; i++){
 			if (FD_ISSET(i, &tmp_socket)){
 				if (i == server._socket){
@@ -30,7 +30,13 @@ int main(int argc, char **argv){
 					int acc = accept(server._socket, (struct sockaddr *) &client_addr, &client_size);
 					if (acc < 0) return (server.fatal_error("accept failure"));
 					FD_SET(acc, &_socket);
+					FD_SET(acc, &w_socket);
 					server.clients.push_back(Client(acc, client_addr));
+					std::string rpl = ": 001 asdf : 🔨 Wҽʅƈσɱҽ TӨ Rαɠɳαɾöƙ 🔨 , asdf\r\n"
+						": 002 asdf :Your host is cc, running version 1.0\r\n"
+						": 003 asdf :This server was created 10/10/2010\r\n"
+						": 004 asdf cc 1.0 u d\r\n";
+					write(acc, rpl.c_str(), rpl.size());
 					write(acc, WELCOME_MSG, strlen(WELCOME_MSG));
 				}
 				else{
