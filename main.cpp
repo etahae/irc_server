@@ -19,55 +19,52 @@ int main(int argc, char **argv){
 
 	char buffer[ARG_MAX];
 
-	while (1){
+	while (1)
+	{
 		tmp_socket = _socket;
 		tmp_w_socket = w_socket;
 		if (select(FD_SETSIZE, &tmp_socket, &tmp_w_socket, 0, 0) < 0) return 1;
 		for (int i = 0; i < FD_SETSIZE; i++){
-			if (FD_ISSET(i, &tmp_socket)){
-				if (i == server._socket){
+			if (FD_ISSET(i, &tmp_socket))
+			{
+				if (i == server._socket)
+				{
 					client_size = sizeof(client_addr);
 					int acc = accept(server._socket, (struct sockaddr *) &client_addr, &client_size);
 					if (acc < 0) return (server.fatal_error("accept failure"));
 					FD_SET(acc, &_socket);
 					FD_SET(acc, &w_socket);
 					server.clients.push_back(Client(acc, client_addr));
-					std::string rpl = ": 001 asdf : 🔨 Wҽʅƈσɱҽ TӨ Rαɠɳαɾöƙ 🔨 , asdf\r\n"
-						": 002 asdf :Your host is cc, running version 1.0\r\n"
-						": 003 asdf :This server was created 10/10/2010\r\n"
-						": 004 asdf cc 1.0 u d\r\n";
-					write(acc, rpl.c_str(), rpl.size());
-					write(acc, WELCOME_MSG, strlen(WELCOME_MSG));
 				}
-				else{
+				else
+				{
 					bzero(buffer, 255);
 					int n;
-					if ((n = read(server.clients[i - 4].fd_socket, buffer, ARG_MAX)) < 0) return 1;
+					if ((n = read(server.clients[i - 4].fd_socket, buffer, ARG_MAX)) < 0)
+						return 1;
 					if (n > 0)
 					{
 						std::cout << buffer << std::flush;
-						if (server.client_verifying(buffer, &server.clients[i - 4]))
-							write(server.clients[i - 4].fd_socket, VERIFIED, strlen(VERIFIED));
-						if (!strncmp(buffer, "bye", 3)){
+						if (server.clients[i - 4].verified == false)
+							if (server.client_verifying(buffer, &server.clients[i - 4]))
+							{
+								if (server.clients[i - 4].verified == false)
+								{
+									std::string rpl = ": 001 " + server.clients[i - 4].nick + " :        🔨 Wҽʅƈσɱҽ TӨ Rαɠɳαɾöƙ 🔨\r\n";
+									write(server.clients[i - 4].fd_socket, rpl.c_str(), rpl.size());
+									server.clients[i - 4].verified = true;
+								}
+								write(server.clients[i - 4].fd_socket, VERIFIED, strlen(VERIFIED));
+							}
+						if (!strncmp(buffer, "bye", 3))
+						{
 							server.clients.pop_back();
 							FD_CLR(i, &_socket);
 						}
 					}
-					// std::cin >> buffer;
-					// for (size_t i = 0; i < server.clients.size(); i++)
-					// {
-					// 	write(server.clients[i].fd_socket, "buffer", 7);
-					// }
 				}
 			}
 		}
-		// bzero(buffer, 255);
-		// if (read(newserver_socket, buffer, 255) < 0) return 1;
-		// std::cout << buffer;
-		// bzero(buffer, 255);
-		// fgets(buffer, 255, stdin);
-		// if (write(newserver_socket, buffer, strlen(buffer)) < 0)
-		//     return 1;
 	}
 	return (0);
 }
