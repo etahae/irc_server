@@ -23,7 +23,8 @@ int main(int argc, char **argv){
 	{
 		tmp_socket = _socket;
 		tmp_w_socket = w_socket;
-		if (select(FD_SETSIZE, &tmp_socket, &tmp_w_socket, 0, 0) < 0) return 1;
+		if (select(FD_SETSIZE, &tmp_socket, &tmp_w_socket, 0, 0) < 0)
+			return 1;
 		for (int i = 0; i < FD_SETSIZE; i++){
 			if (FD_ISSET(i, &tmp_socket))
 			{
@@ -46,6 +47,7 @@ int main(int argc, char **argv){
 					{
 						std::cout << buffer << std::flush;
 						if (server.clients[i - 4].verified == false)
+						{
 							if (server.client_verifying(buffer, &server.clients[i - 4]))
 							{
 								if (server.clients[i - 4].verified == false)
@@ -54,13 +56,18 @@ int main(int argc, char **argv){
 									write(server.clients[i - 4].fd_socket, rpl.c_str(), rpl.size());
 									server.clients[i - 4].verified = true;
 								}
-								write(server.clients[i - 4].fd_socket, VERIFIED, strlen(VERIFIED));
 							}
-						if (!strncmp(buffer, "bye", 3))
-						{
-							server.clients.pop_back();
-							FD_CLR(i, &_socket);
 						}
+						if (server.clients[i - 4].verified == true)
+							write(server.clients[i - 4].fd_socket, VERIFIED, strlen(VERIFIED));
+					}
+					if (n == 0)
+					{
+						cout << DISCONNECTED << server.clients[i - 4].nick << " Disconnected" << endl;
+						FD_CLR(i, &_socket);
+						FD_CLR(i, &w_socket);
+						close(server.clients[i - 4].fd_socket);
+						server.clients.erase(server.clients.begin() + i - 4);
 					}
 				}
 			}
