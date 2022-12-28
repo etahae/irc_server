@@ -1,7 +1,5 @@
 #pragma once
 
-#define WELCOME_MSG "\n\t🔨 \033[0;37mWҽʅƈσɱҽ TӨ Rαɠɳαɾöƙ 🔨\033[0m\n\n"
-// #define VERIFIED "\n\033[0;32m Connected \033[0m\n"
 #define VERIFIED "\033[0;32m • \033[0m"
 
 #include"client.hpp"
@@ -49,6 +47,8 @@ class Server{
 		{
 			if (!cmd || *cmd == 0)
 				return 0;
+			if (client->verified)
+				return 1;
 			char *token;
 			string s_token;
 			token = std::strtok(cmd, " ");
@@ -56,26 +56,29 @@ class Server{
 			if (s_token == "NICK") //set Nick_Name
 			{
 				client->nick = std::strtok(NULL, " ");
-				if (client->nick.find('\n'))
+				if (client->nick.find('\n') != string::npos)
+					client->nick = client->nick.substr(0,client->nick.size() - 1);
+				if (client->nick.find('\r') != string::npos)
 					client->nick = client->nick.substr(0,client->nick.size() - 1);
 			}
-			else if (s_token == "PASS") //set Password
+			if (s_token == "PASS") //set Password
 			{
 				client->pass = std::strtok(NULL, " ");
-				if (client->pass.find('\n'))
+				if (client->pass.find('\n') != string::npos)
+					client->pass = client->pass.substr(0,client->pass.size() - 1);
+				if (client->pass.find('\r') != string::npos)
 					client->pass = client->pass.substr(0,client->pass.size() - 1);
 			}
-			else if (s_token == "USER") //set User_Name
+			if (s_token == "USER") //set User_Name
 			{
 				client->username = std::strtok(NULL, " ");
-				if (client->username.find('\n'))
+				if (client->username.find('\n') != string::npos)
+					client->username = client->username.substr(0,client->username.size() - 1);
+				if (client->username.find('\r') != string::npos)
 					client->username = client->username.substr(0,client->username.size() - 1);
 			}
 			if (client->nick != "" && client->username != "" && client->pass == this->password)
-			{
-				client->verified = true;
 				return 1;
-			}
 			return 0;
 		}
 };
