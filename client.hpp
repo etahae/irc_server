@@ -9,7 +9,6 @@
 #include <vector>
 #include <cstring>
 
-
 using std::string;
 using std::cout;
 using std::endl;
@@ -21,6 +20,7 @@ class Client
 		string	pass;
 		string	nick;
 		string	username;
+		string	ip_address;
 		int		fd_socket;
 		struct	sockaddr_in sock_addr;
 		bool	verified;
@@ -33,5 +33,9 @@ class Client
 				: pass(Pass),sock_addr(Sock_addr), nick(Nick),username(Username), fd_socket(Fd)
 		{
 			verified = false;
+		}
+
+		string user_info(){
+			return (this->nick + "!" + this->username + "@" + this->ip_address + " PRIVMSG " + this->nick + " : " "JOJO" "\r\n");
 		}
 };
