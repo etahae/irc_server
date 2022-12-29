@@ -12,6 +12,8 @@
 
 
 // ERRORS
+
+# define ERR_NONICKNAMEGIVEN					"431 * ERR_NONICKNAMEGIVEN:No nickname given"
 # define ERR_NEEDMOREPARAMS(command)			("461 * " + command + ": Not enough parameters")
 # define ERR_ALREADYREGISTRED					"462 * :Unauthorized command (already registered)"
 # define ERR_PASSWDMISMATCH						"464 * :Password incorrect"
@@ -72,7 +74,10 @@ class Server{
 			string s_token;
 			token = std::strtok(cmd, " ");
 			s_token = token;
-			if (s_token == "NICK") //set Nick_Name
+			cout << "++" << endl;
+			if (s_token == "NICK\r\n" || s_token == "NICK\n") //hundle no nickname given
+				write(client->fd_socket, ERR_NONICKNAMEGIVEN, strlen(ERR_NONICKNAMEGIVEN));
+			else if (s_token == "NICK") //set Nick_Name
 			{
 				client->nick = std::strtok(NULL, " ");
 				if (client->nick.find('\n') != string::npos)
