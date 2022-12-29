@@ -6,24 +6,23 @@
 #include"client.hpp"
 
 // REPLIES
-#define RPL_LIST(channel, usersCount)			("322 * #" + channel + " " + usersCount)
-#define RPL_LISTEND								"323 * :End of LIST"
+// #define RPL_LIST(channel, usersCount)			("322 * #" + channel + " " + usersCount)
+// #define RPL_LISTEND								"323 * :End of LIST"
 
 
 
 // ERRORS
 
-# define ERR_NONICKNAMEGIVEN					"431 * ERR_NONICKNAMEGIVEN:No nickname given"
-# define ERR_NEEDMOREPARAMS(command)			("461 * " + command + ": Not enough parameters")
-# define ERR_ALREADYREGISTRED					"462 * :Unauthorized command (already registered)"
-# define ERR_PASSWDMISMATCH						"464 * :Password incorrect"
-# define ERR_NICKNAMEINUSE(nick)				("433 * " + nick + ":Nickname is already in use")
-# define ERR_RESTRICTED							"484 * :Your connection is restricted!"
-# define ERR_NOTONCHANNEL(channel)				("442 * " + channel + ":You're not on that channel")
-# define ERR_NOSUCHCHANNEL(channel)				("403 * #" + channel + ":No such channel")
-# define ERR_CHANOPRIVSNEEDED(channel)			("482 * #" + channel + ":You're not channel operator")
-# define ERR_USERNOTINCHANNEL(nick, channel)	("441 * " + nick + " #" + channel + ":They aren't on that channel")
-# define ERR_BADCHANMASK(channel)				("476 * #" + channel + ":Bad Channel Mask")
+# define ERR_NONICKNAMEGIVEN					"431 * ERR_NONICKNAMEGIVEN:No nickname given\r\n"
+# define ERR_PASSWDMISMATCH						"464 * ERR_PASSWDMISMATCH:Password incorrect"
+// # define ERR_NEEDMOREPARAMS(command)			("461 * " + command + ": Not enough parameters")
+// # define ERR_ALREADYREGISTRED					"462 * :Unauthorized command (already registered)"
+// # define ERR_RESTRICTED							"484 * :Your connection is restricted!"
+// # define ERR_NOTONCHANNEL(channel)				("442 * " + channel + ":You're not on that channel")
+// # define ERR_NOSUCHCHANNEL(channel)				("403 * #" + channel + ":No such channel")
+// # define ERR_CHANOPRIVSNEEDED(channel)			("482 * #" + channel + ":You're not channel operator")
+// # define ERR_USERNOTINCHANNEL(nick, channel)	("441 * " + nick + " #" + channel + ":They aren't on that channel")
+// # define ERR_BADCHANMASK(channel)				("476 * #" + channel + ":Bad Channel Mask")
 
 class Server{
 	public :
@@ -66,6 +65,7 @@ class Server{
 
 		int	client_verifying(char * cmd, Client * client)
 		{
+			int n = 0;
 			if (!cmd || *cmd == 0)
 				return 0;
 			if (client->verified)
@@ -74,7 +74,6 @@ class Server{
 			string s_token;
 			token = std::strtok(cmd, " ");
 			s_token = token;
-			cout << "++" << endl;
 			if (s_token == "NICK\r\n" || s_token == "NICK\n") //hundle no nickname given
 				write(client->fd_socket, ERR_NONICKNAMEGIVEN, strlen(ERR_NONICKNAMEGIVEN));
 			else if (s_token == "NICK") //set Nick_Name
@@ -84,6 +83,17 @@ class Server{
 					client->nick = client->nick.substr(0,client->nick.size() - 1);
 				if (client->nick.find('\r') != string::npos)
 					client->nick = client->nick.substr(0,client->nick.size() - 1);
+				for (size_t i = 0; i < this->clients.size(); i++)
+				{
+					if (this->clients[i].nick == client->nick)
+						n++;
+					if (n > 1){
+						string dup = "433 * " + client->nick + ":Nickname is already in use\r\n";
+						write(client->fd_socket, dup.c_str(), strlen(dup.c_str()));
+						client->nick = "";
+						break ;
+					}
+				}
 			}
 			if (s_token == "PASS") //set Password
 			{
