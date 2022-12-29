@@ -2,6 +2,8 @@ NAME = ircserv
 
 SOURCES = main.cpp
 
+FLAGS = -fsanitize=address -Wall -Wextra -Werror
+
 HEADERS = server.hpp
 
 # OBJECTS = server.o
@@ -9,7 +11,7 @@ HEADERS = server.hpp
 all : $(NAME)
 
 $(NAME) : $(SOURCES) $(HEADERS)
-	@c++ $(SOURCES) -std=c++98 -o $(NAME)
+	@c++ $(SOURCES) $(FLAGS) -std=c++98 -o $(NAME)
 
 clean :
 	@rm -rf $(NAME)

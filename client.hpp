@@ -30,12 +30,12 @@ class Client
 		Client():verified(false)
 		{}
 		Client(int Fd, struct	sockaddr_in Sock_addr, string Pass = string(), string Nick = string(), string Username = string())
-				: pass(Pass),sock_addr(Sock_addr), nick(Nick),username(Username), fd_socket(Fd)
+				: pass(Pass), nick(Nick),username(Username), fd_socket(Fd), sock_addr(Sock_addr)
 		{
 			verified = false;
 		}
 
 		string user_info(){
-			return (this->nick + "!" + this->username + "@" + this->ip_address + " PRIVMSG " + this->nick + " : " "JOJO" "\r\n");
+			return (this->nick + "!" + this->username + "@" + this->ip_address);
 		}
 };
