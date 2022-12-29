@@ -36,6 +36,7 @@ int main(int argc, char **argv){
 					FD_SET(acc, &_socket);
 					FD_SET(acc, &w_socket);
 					server.clients.push_back(Client(acc, client_addr));
+					(server.clients.end() - 1)->ip_address = inet_ntoa(client_addr.sin_addr);
 				}
 				else
 				{
@@ -52,8 +53,12 @@ int main(int argc, char **argv){
 							{
 								if (server.clients[i - 4].verified == false)
 								{
-									std::string rpl = ": 001 " + server.clients[i - 4].nick + " :        🔨 Wҽʅƈσɱҽ TӨ Rαɠɳαɾöƙ 🔨\r\n";
+									std::string rpl = ":Rαɠɳαɾöƙ 001 " + server.clients[i - 4].nick + " :        🔨 𝔚𝔢𝔩𝔠𝔬𝔪𝔢 𝔗𝔬 ℑ𝔫𝔱𝔢𝔯𝔫𝔢𝔱 ℜ𝔢𝔩𝔞𝔶 ℭ𝔥𝔞𝔱 🔨\r\n"
+									":Rαɠɳαɾöƙ 002 " + server.clients[i - 4].nick + " :Your host is Rαɠɳαɾöƙ, running version 1.0\r\n"
+									":Rαɠɳαɾöƙ 003 " + server.clients[i - 4].nick + " :This server was created 10/02/2022\r\n"
+									":Rαɠɳαɾöƙ 004 " + server.clients[i - 4].nick + " Rαɠɳαɾöƙ 1.0 u c\r\n";
 									write(server.clients[i - 4].fd_socket, rpl.c_str(), rpl.size());
+									// return (":server NOTICE taha : JOJO\r\n");
 									server.clients[i - 4].verified = true;
 								}
 							}
