@@ -1,6 +1,6 @@
 NAME = ircserv
 
-SOURCES = main.cpp
+SOURCES = main.cpp commands.cpp
 
 FLAGS = -fsanitize=address -Wall -Wextra -Werror
 
