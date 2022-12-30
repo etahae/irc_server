@@ -1,12 +1,34 @@
 #include "server.hpp"
 
 
+bool	is_digits_or_length_over(char *str)
+{
+	int i = 0;
+
+	// if (str.find_first_not_of("0123456789") == std::string::npos)
+	// 	return true;
+	if (strlen(str) > 5)
+		return true;
+	while (str[i])
+	{
+		if (isdigit(str[i]))
+			i++;
+		else
+			return true;
+	}
+	if (atoi(str) > 65535 || atoi(str) < 1024)
+		return true;
+	return false;
+}
+
 int main(int argc, char **argv){
 
 	Server server;
 
 	if (argc != 3)
 		return (server.fatal_error("Usage: $> ./ircserv <port> <password>"));
+	if (is_digits_or_length_over(argv[1]))
+		return (server.fatal_error("ircServer: port not valid"));
 	if (server.init_server(argv))
 		return EXIT_FAILURE;
 
