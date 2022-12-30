@@ -8,34 +8,38 @@
 #include <unistd.h>
 #include <vector>
 #include <cstring>
+#include "server.hpp"
 
 using std::string;
 using std::cout;
 using std::endl;
 
-class Client
+namespace irc
 {
-	public:
-		//client authentication
-		string	pass;
-		string	nick;
-		string	username;
-		string	ip_address;
-		int		fd_socket;
-		struct	sockaddr_in sock_addr;
-		bool	verified;
-		//vector channel
+	class Client
+	{
+		public:
+			//client authentication
+			string	pass;
+			string	nick;
+			string	username;
+			string	ip_address;
+			int		fd_socket;
+			struct	sockaddr_in sock_addr;
+			bool	verified;
+			//vector channel
 
-		//constructors
-		Client():verified(false)
-		{}
-		Client(int Fd, struct	sockaddr_in Sock_addr, string Pass = string(), string Nick = string(), string Username = string())
-				: pass(Pass), nick(Nick),username(Username), fd_socket(Fd), sock_addr(Sock_addr)
-		{
-			verified = false;
-		}
+			//constructors
+			Client():verified(false) {}
+			Client(int Fd, struct	sockaddr_in Sock_addr, string Pass = string(), string Nick = string(), string Username = string())
+					: pass(Pass), nick(Nick),username(Username), fd_socket(Fd), sock_addr(Sock_addr)
+			{
+				verified = false;
+			}
 
-		string user_info(){
-			return (this->nick + "!" + this->username + "@" + this->ip_address);
-		}
-};
+			string user_info()
+			{
+				return (this->nick + "!" + this->username + "@" + this->ip_address);
+			}
+	};
+}
