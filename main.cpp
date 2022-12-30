@@ -1,5 +1,6 @@
 #include "server.hpp"
 
+using namespace irc;
 
 bool	is_digits_or_length_over(char *str)
 {
@@ -35,34 +36,34 @@ int main(int argc, char **argv){
 	struct sockaddr_in client_addr;
 	socklen_t client_size;
 
-	fd_set _socket, tmp_socket, w_socket, tmp_w_socket;
-	FD_ZERO(&_socket);
-	FD_SET(server._socket, &_socket);	//this to read from client sockets and accept them
+	fd_set tmp_r_socket, tmp_w_socket;
+	FD_ZERO(&server.r_socket);
+	FD_SET(server._socket, &server.r_socket);	//this to read from client sockets and accept them
 
 	char buffer[ARG_MAX];
 
 	while (1)
 	{
-		tmp_socket = _socket;
-		tmp_w_socket = w_socket;
-		if (select(FD_SETSIZE, &tmp_socket, &tmp_w_socket, 0, 0) < 0)
+		tmp_r_socket = server.r_socket;
+		tmp_w_socket = server.w_socket;
+		if (select(FD_SETSIZE, &tmp_r_socket, &tmp_w_socket, 0, 0) < 0)
 			return 1;
 		for (int i = 0; i < FD_SETSIZE; i++){
-			if (FD_ISSET(i, &tmp_socket))
+			if (FD_ISSET(i, &tmp_r_socket))
 			{
 				if (i == server._socket)
 				{
 					client_size = sizeof(client_addr);
 					int acc = accept(server._socket, (struct sockaddr *) &client_addr, &client_size);
 					if (acc < 0) return (server.fatal_error("accept failure"));
-					FD_SET(acc, &_socket);
-					FD_SET(acc, &w_socket);
+					FD_SET(acc, &server.r_socket);
+					FD_SET(acc, &server.w_socket);
 					server.clients.push_back(Client(acc, client_addr));
 					(server.clients.end() - 1)->ip_address = inet_ntoa(client_addr.sin_addr);
 				}
 				else
 				{
-					bzero(buffer, 255);
+					bzero(buffer, ARG_MAX);
 					int n;
 					if ((n = read(server.clients[i - 4].fd_socket, buffer, ARG_MAX)) < 0)
 						return 1;
@@ -79,8 +80,9 @@ int main(int argc, char **argv){
 									":Rαɠɳαɾöƙ 002 " + server.clients[i - 4].nick + " :Your host is Rαɠɳαɾöƙ, running version 1.0\r\n"
 									":Rαɠɳαɾöƙ 003 " + server.clients[i - 4].nick + " :This server was created 28/12/2022\r\n";
 									write(server.clients[i - 4].fd_socket, rpl.c_str(), rpl.size());
-									// return (":server NOTICE taha : JOJO\r\n");
 									server.clients[i - 4].verified = true;
+									cout << CONNECTED << server.clients[i - 4].nick << " Connected" << endl;
+									// return (":server NOTICE taha : JOJO\r\n");
 								}
 							}
 						}
@@ -88,13 +90,7 @@ int main(int argc, char **argv){
 							write(server.clients[i - 4].fd_socket, VERIFIED, strlen(VERIFIED));
 					}
 					if (n == 0)
-					{
-						cout << DISCONNECTED << server.clients[i - 4].nick << " Disconnected" << endl;
-						FD_CLR(i, &_socket);
-						FD_CLR(i, &w_socket);
-						close(server.clients[i - 4].fd_socket);
-						server.clients.erase(server.clients.begin() + i - 4);
-					}
+						server.disconnect(i, server.clients[i - 4].fd_socket);
 				}
 			}
 		}
