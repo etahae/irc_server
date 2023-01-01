@@ -73,13 +73,17 @@ namespace irc
 					return 0;
 				if (client->verified)
 					return 1;
-				char *token;
-				string s_token;
-				token = std::strtok(cmd, " ");
+				char *token = strdup(cmd);
+				string s_token;	//NICK, USER, PASS
+				string res;		//sentence after NICK, USER, PASS
+
+				token = std::strtok(token, " ");
 				s_token = token;
-				this->_NICK(s_token, client);
-				this->_USER(s_token, client);
-				this->_PASS(s_token, client);
+				if (s_token == "NICK" || s_token == "USER" || s_token == "PASS")
+					split(cmd, s_token, res);
+				this->_NICK(s_token, client, res);
+				this->_USER(s_token, client, res);
+				this->_PASS(s_token, client, res);
 				if (client->nick != "" && client->username != "" && client->pass == this->password)
 					return 1;
 				return 0;
@@ -95,8 +99,9 @@ namespace irc
 					this->clients.erase(this->clients.begin() + i - 4);
 			}
 	
-			void	_NICK(string s_token, Client * client);
-			void	_USER(string s_token, Client * client);
-			void	_PASS(string s_token, Client * client);
+			void	_NICK(string s_token, Client * client, string nick);
+			void	_USER(string s_token, Client * client, string user);
+			void	_PASS(string s_token, Client * client, string pass);
+			void    split(char * str, string & cmd, string & res);
 	};
 }
