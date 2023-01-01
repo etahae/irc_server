@@ -7,7 +7,7 @@ void	Server::_NICK(string s_token, Client * client, string nick)
 {
     int n = 0;
     if (s_token == "NICK\r\n" || s_token == "NICK\n" || (s_token == "NICK" && nick == "")) //hundle no nickname given // WE SHOULD HANDLE ONLY WHITE SPACES AFTER NICK
-        write(client->fd_socket, ERR_NONICKNAMEGIVEN, strlen(ERR_NONICKNAMEGIVEN));
+        send_msg(client, ERR_NONICKNAMEGIVEN);
     else if (s_token == "NICK") //set Nick_Name
     {
         client->nick = nick;
@@ -17,7 +17,7 @@ void	Server::_NICK(string s_token, Client * client, string nick)
                 n++;
             if (n > 1){
                 string dup = "433 * " + client->nick + ":Nickname is already in use\r\n";
-                write(client->fd_socket, dup.c_str(), strlen(dup.c_str()));
+                send_msg(client, dup);
                 client->nick = "";
                 break ;
             }
@@ -27,15 +27,28 @@ void	Server::_NICK(string s_token, Client * client, string nick)
 
 void	Server::_USER(string s_token, Client * client, string user)
 {
-	cout << "*" << user << "*\n";
     if (s_token == "USER") //set User_Name
         client->username = user;
 }
 
 void	Server::_PASS(string s_token, Client * client, string pass)
 {
-    if (s_token == "PASS") //set Password
+    if (s_token == "PASS\r\n" || s_token == "PASS\n" || (s_token == "PASS" && pass == "")) //hundle no nickname given // WE SHOULD HANDLE ONLY WHITE SPACES AFTER NICK
+        send_msg(client, ERR_NEEDMOREPARAMS("PASS"));
+    else if (s_token == "PASS") //set Password
+    {
+        if (pass != this->password)
+        {
+            send_msg(client, ERR_PASSWDMISMATCH);
+            return ;
+        }
+        if (client->pass != "")
+        {
+            send_msg(client, ERR_ALREADYREGISTRED);
+            return ;
+        }
 		client->pass = pass;
+    }
 }
 
 void    Server::split(char *str, string &cmd, string &res)
