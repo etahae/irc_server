@@ -15,9 +15,10 @@
 // ERRORS
 
 # define ERR_NONICKNAMEGIVEN					"431 * ERR_NONICKNAMEGIVEN:No nickname given\r\n"
-# define ERR_PASSWDMISMATCH						"464 * ERR_PASSWDMISMATCH:Password incorrect"
-// # define ERR_NEEDMOREPARAMS(command)			("461 * " + command + ": Not enough parameters")
-// # define ERR_ALREADYREGISTRED					"462 * :Unauthorized command (already registered)"
+# define ERR_PASSWDMISMATCH						"464 * ERR_PASSWDMISMATCH:Password incorrect\r\n"
+# define ERR_ALREADYREGISTRED					"462 * :Unauthorized command (already registered)\r\n"
+# define ERR_NEEDMOREPARAMS(command)			("461 * " command ": Not enough parameters\r\n")
+ #define ERR_NICKNAMEINUSE(nick)				(nick " :Nickname is already in use\r\n")
 // # define ERR_RESTRICTED							"484 * :Your connection is restricted!"
 // # define ERR_NOTONCHANNEL(channel)				("442 * " + channel + ":You're not on that channel")
 // # define ERR_NOSUCHCHANNEL(channel)				("403 * #" + channel + ":No such channel")
@@ -98,7 +99,12 @@ namespace irc
 				if (this->clients.size() != 0)
 					this->clients.erase(this->clients.begin() + i - 4);
 			}
-	
+
+			void	send_msg(Client *client, string msg)
+			{
+				write(client->fd_socket, msg.c_str(), msg.size());
+			}
+
 			void	_NICK(string s_token, Client * client, string nick);
 			void	_USER(string s_token, Client * client, string user);
 			void	_PASS(string s_token, Client * client, string pass);
