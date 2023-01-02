@@ -14,11 +14,11 @@
 
 // ERRORS
 
-# define ERR_NONICKNAMEGIVEN					"431 * ERR_NONICKNAMEGIVEN:No nickname given\r\n"
-# define ERR_PASSWDMISMATCH						"464 * ERR_PASSWDMISMATCH:Password incorrect\r\n"
-# define ERR_ALREADYREGISTRED					"462 * ::You may not reregister\r\n"
-# define ERR_NEEDMOREPARAMS(command)			("461 * " command ": Not enough parameters\r\n")
- #define ERR_NICKNAMEINUSE(nick)				(nick " :Nickname is already in use\r\n")
+# define ERR_NONICKNAMEGIVEN					"431 * ERR_NONICKNAMEGIVEN:No nickname given"
+# define ERR_PASSWDMISMATCH						"464 * ERR_PASSWDMISMATCH:Password incorrect"
+# define ERR_ALREADYREGISTRED					"462 * ::You may not reregister"
+# define ERR_NEEDMOREPARAMS(command)			("461 * " command ": Not enough parameters")
+ #define ERR_NICKNAMEINUSE(nick)				(nick " :Nickname is already in use")
 // # define ERR_RESTRICTED							"484 * :Your connection is restricted!"
 // # define ERR_NOTONCHANNEL(channel)				("442 * " + channel + ":You're not on that channel")
 // # define ERR_NOSUCHCHANNEL(channel)				("403 * #" + channel + ":No such channel")
@@ -90,6 +90,26 @@ namespace irc
 				return 0;
 			}
 
+			int	customer_service(char * cmd, Client * client)
+			{
+				if (!cmd || *cmd == 0)
+					return 0;
+				char *token = strdup(cmd);
+				string s_token;	//NICK, USER, PASS
+				string res;		//sentence after NICK, USER, PASS
+
+				token = std::strtok(token, " ");
+				s_token = token;
+				if (s_token == "NICK" || s_token == "USER" || s_token == "PASS"
+					|| s_token == "NOTICE")
+					split(cmd, s_token, res);
+				this->_NICK(s_token, client, res);
+				this->_USER(s_token, client, res);
+				this->_PASS(s_token, client, res);
+				this->_NOTICE(s_token, res);
+				return 0;
+			}
+
 			void	disconnect(size_t i, int fd)
 			{
 				if (this->clients[i - 4]->nick == "")
@@ -108,13 +128,16 @@ namespace irc
 
 			void	send_msg(Client *client, string msg)
 			{
+				msg = msg + "\r\n";
 				write(client->fd_socket, msg.c_str(), msg.size());
 			}
 
 			void	_NICK(string s_token, Client * client, string nick);
 			void	_USER(string s_token, Client * client, string user);
 			void	_PASS(string s_token, Client * client, string pass);
+			void	_NOTICE(string s_token, string pass);
 			void    split(char * str, string & cmd, string & res);
 			size_t	params_calc(string params);
+			Client * find_client(string nick);
 	};
 }

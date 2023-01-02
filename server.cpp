@@ -13,7 +13,7 @@ void    Server::split(char *str, string &cmd, string &res)
 	token = strtok_r(rest, " ", &rest);
 	cmd = token;    //NICK || USER || PASS ...
 	arg = rest;     //the whole command after removing NICK, ...
-	if (cmd == "NICK" || cmd == "PASS" || cmd == "USER")
+	if (cmd == "NICK" || cmd == "PASS" || cmd == "USER" || cmd == "NOTICE")
 	{
 		pos = arg.find_first_not_of(" : \r\n");
 		end_pos = arg.find_last_not_of(" \t\f\v\n\r");
@@ -36,4 +36,12 @@ size_t  Server::params_calc(string params)
         count++;
     }
     return count;
+}
+
+Client * Server::find_client(string nick)
+{
+	for (size_t i = 0; i < this->clients.size(); i++)
+		if (this->clients[i]->nick == nick)
+			return this->clients[i];
+	return (nullptr);
 }

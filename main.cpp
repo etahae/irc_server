@@ -59,7 +59,7 @@ int main(int argc, char **argv){
 					FD_SET(acc, &server.r_socket);
 					FD_SET(acc, &server.w_socket);
 					server.clients.push_back(new Client(acc, client_addr));
-					// (server.clients->end() - 1)->ip_address = inet_ntoa(client_addr.sin_addr);
+					(*server.clients.end() - 1)->ip_address = inet_ntoa(client_addr.sin_addr);
 				}
 				else
 				{
@@ -86,6 +86,8 @@ int main(int argc, char **argv){
 								}
 							}
 						}
+						else
+							server.customer_service(buffer, server.clients[i - 4]);
 						if (server.clients[i - 4]->verified == true)
 							write(server.clients[i - 4]->fd_socket, VERIFIED, strlen(VERIFIED));
 					}

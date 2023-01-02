@@ -64,3 +64,25 @@ void	Server::_PASS(string s_token, Client * client, string pass)
 		client->pass = pass;
     }
 }
+
+void	Server::_NOTICE(string s_token, string msg)
+{
+    if (s_token == "NOTICE\r\n" || s_token == "NOTICE\n" || (s_token == "NOTICE" && msg == "")) //hundle no nickname given // WE SHOULD HANDLE ONLY WHITE SPACES AFTER NICK
+        return ;
+    else if (s_token == "NOTICE")
+    {
+        char * msg_token = strdup(const_cast<char *> (msg.c_str()));
+        char * nick_name = strtok_r(msg_token, " ",
+            &msg_token);
+        cout <<"**"<< nick_name <<"**"<< endl;
+        if (msg_token && nick_name)
+        {
+            Client * receiver = find_client(nick_name);
+            if (receiver != nullptr)
+            {
+                string letter = ":server NOTICE " + string(nick_name) + ": " + msg_token;
+                send_msg(receiver, letter);
+            }
+        }
+    }
+}
