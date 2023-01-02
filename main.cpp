@@ -58,39 +58,39 @@ int main(int argc, char **argv){
 					if (acc < 0) return (server.fatal_error("accept failure"));
 					FD_SET(acc, &server.r_socket);
 					FD_SET(acc, &server.w_socket);
-					server.clients.push_back(Client(acc, client_addr));
-					(server.clients.end() - 1)->ip_address = inet_ntoa(client_addr.sin_addr);
+					server.clients.push_back(new Client(acc, client_addr));
+					// (server.clients->end() - 1)->ip_address = inet_ntoa(client_addr.sin_addr);
 				}
 				else
 				{
 					bzero(buffer, ARG_MAX);
 					int n;
-					if ((n = read(server.clients[i - 4].fd_socket, buffer, ARG_MAX)) < 0)
+					if ((n = read(server.clients[i - 4]->fd_socket, buffer, ARG_MAX)) < 0)
 						return 1;
 					if (n > 0)
 					{
 						std::cout << buffer << std::flush;
-						if (server.clients[i - 4].verified == false)
+						if (server.clients[i - 4]->verified == false)
 						{
-							if (server.client_verifying(buffer, &server.clients[i - 4]))
+							if (server.client_verifying(buffer, server.clients[i - 4]))
 							{
-								if (server.clients[i - 4].verified == false)
+								if (server.clients[i - 4]->verified == false)
 								{
-									std::string rpl = ":Rαɠɳαɾöƙ 001 " + server.clients[i - 4].nick + " :        🔨 𝔚𝔢𝔩𝔠𝔬𝔪𝔢 𝔗𝔬 ℑ𝔫𝔱𝔢𝔯𝔫𝔢𝔱 ℜ𝔢𝔩𝔞𝔶 ℭ𝔥𝔞𝔱 🔨\r\n"
-									":Rαɠɳαɾöƙ 002 " + server.clients[i - 4].nick + " :Your host is Rαɠɳαɾöƙ, running version 1.0\r\n"
-									":Rαɠɳαɾöƙ 003 " + server.clients[i - 4].nick + " :This server was created 28/12/2022\r\n";
-									write(server.clients[i - 4].fd_socket, rpl.c_str(), rpl.size());
-									server.clients[i - 4].verified = true;
-									cout << CONNECTED << server.clients[i - 4].nick << " Connected" << endl;
+									std::string rpl = ":Rαɠɳαɾöƙ 001 " + server.clients[i - 4]->nick + " :        🔨 𝔚𝔢𝔩𝔠𝔬𝔪𝔢 𝔗𝔬 ℑ𝔫𝔱𝔢𝔯𝔫𝔢𝔱 ℜ𝔢𝔩𝔞𝔶 ℭ𝔥𝔞𝔱 🔨\r\n"
+									":Rαɠɳαɾöƙ 002 " + server.clients[i - 4]->nick + " :Your host is Rαɠɳαɾöƙ, running version 1.0\r\n"
+									":Rαɠɳαɾöƙ 003 " + server.clients[i - 4]->nick + " :This server was created 28/12/2022\r\n";
+									write(server.clients[i - 4]->fd_socket, rpl.c_str(), rpl.size());
+									server.clients[i - 4]->verified = true;
+									cout << CONNECTED << server.clients[i - 4]->nick << " Connected" << endl;
 									// return (":server NOTICE taha : JOJO\r\n");
 								}
 							}
 						}
-						if (server.clients[i - 4].verified == true)
-							write(server.clients[i - 4].fd_socket, VERIFIED, strlen(VERIFIED));
+						if (server.clients[i - 4]->verified == true)
+							write(server.clients[i - 4]->fd_socket, VERIFIED, strlen(VERIFIED));
 					}
 					if (n == 0)
-						server.disconnect(i, server.clients[i - 4].fd_socket);
+						server.disconnect(i, server.clients[i - 4]->fd_socket);
 				}
 			}
 		}

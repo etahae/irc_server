@@ -13,7 +13,7 @@ void	Server::_NICK(string s_token, Client * client, string nick)
         client->nick = nick;
         for (size_t i = 0; i < this->clients.size(); i++)
         {
-            if (this->clients[i].nick == client->nick)
+            if (this->clients[i]->nick == client->nick)
                 n++;
             if (n > 1){
                 string dup = "433 * " + client->nick + ":Nickname is already in use\r\n";

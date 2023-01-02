@@ -35,7 +35,7 @@ namespace irc
 			int					port_number;
 			int					_socket;
 			fd_set				r_socket, w_socket;
-			std::vector<Client>	clients;
+			std::vector<Client *>	clients;
 			struct sockaddr_in	server_addr;
 
 			~Server()
@@ -92,15 +92,18 @@ namespace irc
 
 			void	disconnect(size_t i, int fd)
 			{
-				if (this->clients[i - 4].nick == "")
+				if (this->clients[i - 4]->nick == "")
 					cout << DISCONNECTED << "_unknown_user" << " Disconnected" << endl;
 				else
-					cout << DISCONNECTED << this->clients[i - 4].nick << " Disconnected" << endl;
+					cout << DISCONNECTED << this->clients[i - 4]->nick << " Disconnected" << endl;
 				FD_CLR(i, &this->r_socket);
 				FD_CLR(i, &this->w_socket);
 				close(fd);
 				if (this->clients.size() != 0)
+				{
+					delete this->clients[i - 4];
 					this->clients.erase(this->clients.begin() + i - 4);
+				}
 			}
 
 			void	send_msg(Client *client, string msg)
