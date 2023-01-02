@@ -16,7 +16,7 @@
 
 # define ERR_NONICKNAMEGIVEN					"431 * ERR_NONICKNAMEGIVEN:No nickname given\r\n"
 # define ERR_PASSWDMISMATCH						"464 * ERR_PASSWDMISMATCH:Password incorrect\r\n"
-# define ERR_ALREADYREGISTRED					"462 * :Unauthorized command (already registered)\r\n"
+# define ERR_ALREADYREGISTRED					"462 * ::You may not reregister\r\n"
 # define ERR_NEEDMOREPARAMS(command)			("461 * " command ": Not enough parameters\r\n")
  #define ERR_NICKNAMEINUSE(nick)				(nick " :Nickname is already in use\r\n")
 // # define ERR_RESTRICTED							"484 * :Your connection is restricted!"
@@ -92,7 +92,10 @@ namespace irc
 
 			void	disconnect(size_t i, int fd)
 			{
-				cout << DISCONNECTED << this->clients[i - 4].nick << " Disconnected" << endl;
+				if (this->clients[i - 4].nick == "")
+					cout << DISCONNECTED << "_unknown_user" << " Disconnected" << endl;
+				else
+					cout << DISCONNECTED << this->clients[i - 4].nick << " Disconnected" << endl;
 				FD_CLR(i, &this->r_socket);
 				FD_CLR(i, &this->w_socket);
 				close(fd);
@@ -109,5 +112,6 @@ namespace irc
 			void	_USER(string s_token, Client * client, string user);
 			void	_PASS(string s_token, Client * client, string pass);
 			void    split(char * str, string & cmd, string & res);
+			size_t	params_calc(string params);
 	};
 }

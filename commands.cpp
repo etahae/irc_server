@@ -27,8 +27,22 @@ void	Server::_NICK(string s_token, Client * client, string nick)
 
 void	Server::_USER(string s_token, Client * client, string user)
 {
-    if (s_token == "USER") //set User_Name
+    if (s_token == "USER\r\n" || s_token == "USER\n" || (s_token == "USER" && user == "")) //hundle no nickname given // WE SHOULD HANDLE ONLY WHITE SPACES AFTER NICK
+        send_msg(client, ERR_NEEDMOREPARAMS("USER"));
+    else if (s_token == "USER") //set User_Name
+    {
+        if (client->username != "")
+        {
+            send_msg(client, ERR_ALREADYREGISTRED);
+            return ;
+        }
+        if (this->params_calc(user) < 4)
+        {
+            send_msg(client, ERR_NEEDMOREPARAMS("USER"));
+            return ;
+        }
         client->username = user;
+    }
 }
 
 void	Server::_PASS(string s_token, Client * client, string pass)
@@ -37,14 +51,14 @@ void	Server::_PASS(string s_token, Client * client, string pass)
         send_msg(client, ERR_NEEDMOREPARAMS("PASS"));
     else if (s_token == "PASS") //set Password
     {
-        if (pass != this->password)
-        {
-            send_msg(client, ERR_PASSWDMISMATCH);
-            return ;
-        }
         if (client->pass != "")
         {
             send_msg(client, ERR_ALREADYREGISTRED);
+            return ;
+        }
+        if (pass != this->password)
+        {
+            send_msg(client, ERR_PASSWDMISMATCH);
             return ;
         }
 		client->pass = pass;
@@ -73,4 +87,16 @@ void    Server::split(char *str, string &cmd, string &res)
 		else		//(pos == end_pos)
 			res = "";
 	}
+}
+
+size_t  Server::params_calc(string params)
+{
+    char * strToken = const_cast<char *> (params.c_str());
+    size_t count = 0;
+    strToken = strtok ( strToken, " " );
+    while ( strToken != NULL ) {
+        strToken = strtok ( NULL, " " );
+        count++;
+    }
+    return count;
 }
