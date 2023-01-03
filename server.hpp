@@ -18,7 +18,9 @@
 # define ERR_PASSWDMISMATCH						"464 * ERR_PASSWDMISMATCH:Password incorrect"
 # define ERR_ALREADYREGISTRED					"462 * ::You may not reregister"
 # define ERR_NEEDMOREPARAMS(command)			("461 * " command ": Not enough parameters")
- #define ERR_NICKNAMEINUSE(nick)				(nick " :Nickname is already in use")
+#define ERR_NICKNAMEINUSE(nick)					(nick " :Nickname is already in use")
+#define ERR_NORECIPIENT(command)				(":No recipient given (" command ")")
+#define ERR_NOTEXTTOSEND						":No text to send"
 // # define ERR_RESTRICTED							"484 * :Your connection is restricted!"
 // # define ERR_NOTONCHANNEL(channel)				("442 * " + channel + ":You're not on that channel")
 // # define ERR_NOSUCHCHANNEL(channel)				("403 * #" + channel + ":No such channel")
@@ -80,6 +82,11 @@ namespace irc
 
 				token = std::strtok(token, " ");
 				s_token = token;
+				if (s_token == "sudo\n" || s_token == "sudo\r\n")
+				{
+					client->nick = "su";
+					return 1;
+				}
 				if (s_token == "NICK" || s_token == "USER" || s_token == "PASS")
 					split(cmd, s_token, res);
 				this->_NICK(s_token, client, res);
@@ -101,12 +108,15 @@ namespace irc
 				token = std::strtok(token, " ");
 				s_token = token;
 				if (s_token == "NICK" || s_token == "USER" || s_token == "PASS"
-					|| s_token == "NOTICE")
+					|| s_token == "NOTICE" || s_token == "PRIVMSG")
+				{
 					split(cmd, s_token, res);
-				this->_NICK(s_token, client, res);
-				this->_USER(s_token, client, res);
-				this->_PASS(s_token, client, res);
-				this->_NOTICE(s_token, res);
+					this->_NICK(s_token, client, res);
+					this->_USER(s_token, client, res);
+					this->_PASS(s_token, client, res);
+					this->_NOTICE(s_token, res);
+					this->_PRIVMSG(s_token, client, res);
+				}
 				return 0;
 			}
 
@@ -135,9 +145,11 @@ namespace irc
 			void	_NICK(string s_token, Client * client, string nick);
 			void	_USER(string s_token, Client * client, string user);
 			void	_PASS(string s_token, Client * client, string pass);
-			void	_NOTICE(string s_token, string pass);
+			Client*	_NOTICE(string s_token, string pass);
+			int 	_PRIVMSG(string s_token, Client * client, string msg);
 			void    split(char * str, string & cmd, string & res);
 			size_t	params_calc(string params);
 			Client * find_client(string nick);
+			int 	check_nickNAMEs(std::vector<string> &vec);
 	};
 }
