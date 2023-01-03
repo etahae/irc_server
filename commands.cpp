@@ -65,16 +65,15 @@ void	Server::_PASS(string s_token, Client * client, string pass)
     }
 }
 
-void	Server::_NOTICE(string s_token, string msg)
+Client	*Server::_NOTICE(string s_token, string msg)
 {
-    if (s_token == "NOTICE\r\n" || s_token == "NOTICE\n" || (s_token == "NOTICE" && msg == "")) //hundle no nickname given // WE SHOULD HANDLE ONLY WHITE SPACES AFTER NICK
-        return ;
+    if (s_token == "NOTICE\r\n" || s_token == "NOTICE\n" || (s_token == "NOTICE" && msg == "")) //hundle no notice command given // WE SHOULD HANDLE ONLY WHITE SPACES AFTER NOTICE
+        return nullptr;
     else if (s_token == "NOTICE")
     {
         char * msg_token = strdup(const_cast<char *> (msg.c_str()));
         char * nick_name = strtok_r(msg_token, " ",
             &msg_token);
-        cout <<"**"<< nick_name <<"**"<< endl;
         if (msg_token && nick_name)
         {
             Client * receiver = find_client(nick_name);
@@ -82,7 +81,85 @@ void	Server::_NOTICE(string s_token, string msg)
             {
                 string letter = ":server NOTICE " + string(nick_name) + ": " + msg_token;
                 send_msg(receiver, letter);
+				return receiver;
             }
         }
     }
+	return nullptr;
 }
+
+void	trim_whiteSpaces(string &str)
+{
+	size_t start = str.find_first_not_of(" \t");
+	size_t	end = str.find_last_not_of(" \n\t\r");
+	if (start != string::npos && end != string::npos)
+		str = str.substr(start, end - start + 1);
+	else if (start != string::npos)
+		str = str.substr(start, str.size() - start + 1);
+	else if (end != string::npos)
+		str = str.substr(0, end - 1);
+}
+
+int	Server::check_nickNAMEs(std::vector<string> &vec)
+{
+	size_t count = 0;
+	for (size_t ii = 0; ii < this->clients.size(); ii++)
+	{
+		for (size_t i = 0; i < vec.size(); i++)
+		{
+			if (vec[i] == clients[ii]->nick)
+			{
+				count++;
+				if (count > 1)
+					return (1);
+			}
+		}
+		if (count == 0)
+			return (2);
+		count = 0;
+	}
+	if (vec.size() > clients.size())
+		return 1;
+	return (0);
+}
+
+int	Server::_PRIVMSG(string s_token, Client * client, string msg)
+{
+	if (s_token == "PRIVMSG\r\n" || s_token == "PRIVMSG\n")
+		return (send_msg(client, ERR_NORECIPIENT("PRIVMSG")), 0);
+	// if (s_token == "PRIVMSG" && msg == "")
+	// 	return (ERR_NOTEXTTOSEND, 0);
+	// size_t  i = 0;
+	std::vector<string> cls;
+
+	char *client_nick;
+	string	result;
+	string	sms;
+
+	client_nick = strtok(const_cast<char *> (msg.c_str()), ",");
+	while (client_nick != NULL)
+	{
+		result = client_nick;
+		trim_whiteSpaces(result);
+		cls.push_back(result);
+		client_nick = strtok(NULL, ",");
+	}
+	sms = *(cls.end() - 1);
+	size_t start = sms.find_first_of(" ");
+	if (start != string::npos)
+	{
+		*(cls.end() - 1) = sms.substr(0, start);
+		sms = sms.substr(start + 1, sms.length() - 1);
+	}
+	if (!this->check_nickNAMEs(cls))
+		cout << "VALID\n";
+	else
+		cout << "NOOOOO\n";
+	return 0;
+}
+
+//To_DO :
+//MULTI client in PRIVMSG arguments
+//CHECK repetitive clients if found return error :
+//		ERR_TOOMANYTARGETS
+//                    "<target> :Duplicate recipients. No message 
