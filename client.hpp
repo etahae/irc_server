@@ -31,8 +31,8 @@ namespace irc
 
 			//constructors
 			Client():verified(false) {}
-			Client(int Fd, struct	sockaddr_in Sock_addr, string Pass = string(), string Nick = string(), string Username = string())
-					: pass(Pass), nick(Nick),username(Username), fd_socket(Fd), sock_addr(Sock_addr)
+			Client(int Fd, struct	sockaddr_in Sock_addr, string ip_, string Pass = string(), string Nick = string(), string Username = string())
+					: pass(Pass), nick(Nick),username(Username),  ip_address(ip_), fd_socket(Fd), sock_addr(Sock_addr)
 			{
 				verified = false;
 			}
