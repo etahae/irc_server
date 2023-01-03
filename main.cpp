@@ -32,12 +32,12 @@ int main(int argc, char **argv){
 		return (server.fatal_error("ircServer: port not valid"));
 	if (server.init_server(argv))
 		return EXIT_FAILURE;
-
 	struct sockaddr_in client_addr;
 	socklen_t client_size;
 
 	fd_set tmp_r_socket, tmp_w_socket;
 	FD_ZERO(&server.r_socket);
+	FD_ZERO(&server.w_socket);
 	FD_SET(server._socket, &server.r_socket);	//this to read from client sockets and accept them
 
 	char buffer[ARG_MAX];
@@ -58,8 +58,8 @@ int main(int argc, char **argv){
 					if (acc < 0) return (server.fatal_error("accept failure"));
 					FD_SET(acc, &server.r_socket);
 					FD_SET(acc, &server.w_socket);
-					server.clients.push_back(new Client(acc, client_addr));
-					(*server.clients.end() - 1)->ip_address = inet_ntoa(client_addr.sin_addr);
+					server.clients.push_back(new Client(acc, client_addr, inet_ntoa(client_addr.sin_addr)));
+					// (*server.clients.end() - 1)->ip_address = inet_ntoa(client_addr.sin_addr);
 				}
 				else
 				{
@@ -69,7 +69,7 @@ int main(int argc, char **argv){
 						return 1;
 					if (n > 0)
 					{
-						std::cout << buffer << std::flush;
+						// std::cout << buffer << std::flush;
 						if (server.clients[i - 4]->verified == false)
 						{
 							if (server.client_verifying(buffer, server.clients[i - 4]))
