@@ -66,10 +66,10 @@ void	Server::_PASS(string s_token, Client * client, string pass)
     }
 }
 
-Client	*Server::_NOTICE(string s_token, string msg)
+void    Server::_NOTICE(string s_token, Client * client, string msg)
 {
     if (s_token == "NOTICE\r\n" || s_token == "NOTICE\n" || (s_token == "NOTICE" && msg == "")) //hundle no notice command given // WE SHOULD HANDLE ONLY WHITE SPACES AFTER NOTICE
-        return nullptr;
+        return ;
     else if (s_token == "NOTICE")
     {
         char * msg_token = strdup(const_cast<char *> (msg.c_str()));
@@ -80,13 +80,11 @@ Client	*Server::_NOTICE(string s_token, string msg)
             Client * receiver = find_client(nick_name);
             if (receiver != nullptr)
             {
-                string letter = ":server NOTICE " + string(nick_name) + ": " + msg_token;
+                string letter = ":" + client->nick + " PRIVMSG " + string(nick_name) + " :" + msg_token;
                 send_msg(receiver, letter);
-				return receiver;
             }
         }
     }
-	return nullptr;
 }
 
 int	Server::_PRIVMSG(string s_token, Client * client, string msg)
@@ -121,8 +119,10 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
         return (send_msg(client, valid_cls), 1);
     if (sms == "")
         return (send_msg(client, ERR_NOTEXTTOSEND), 1);
+    if (sms.find(':') == string::npos)
+        sms.insert(0, " : ");
     for (size_t i = 0; i < cls.size(); i++)
-        send_msg(this->find_client(cls[i]), ":server NOTICE " + cls[i] + ": " + sms);
+        send_msg(this->find_client(cls[i]), ":" + client->nick + " PRIVMSG " + cls[i] + sms);
     return (0);
 }
 

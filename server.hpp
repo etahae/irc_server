@@ -114,7 +114,7 @@ namespace irc
 					this->_NICK(s_token, client, res);
 					this->_USER(s_token, client, res);
 					this->_PASS(s_token, client, res);
-					this->_NOTICE(s_token, res);
+					this->_NOTICE(s_token, client, res);
 					this->_PRIVMSG(s_token, client, res);
 				}
 				return 0;
@@ -145,7 +145,7 @@ namespace irc
 			void	_NICK(string s_token, Client * client, string nick);
 			void	_USER(string s_token, Client * client, string user);
 			void	_PASS(string s_token, Client * client, string pass);
-			Client*	_NOTICE(string s_token, string pass);
+			void	_NOTICE(string s_token, Client * client, string pass);
 			int 	_PRIVMSG(string s_token, Client * client, string msg);
 			void    split(char * str, string & cmd, string & res);
 			size_t	params_calc(string params);
