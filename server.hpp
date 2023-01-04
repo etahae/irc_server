@@ -20,7 +20,7 @@
 # define ERR_NEEDMOREPARAMS(command)			("461 * " command ": Not enough parameters")
 # define ERR_NICKNAMEINUSE(nick)					(nick " :Nickname is already in use")
 # define ERR_NORECIPIENT(command)				("411 * :No recipient given (" command ")")
-# define ERR_NOTEXTTOSEND						"412 * :No text to send"
+# define ERR_NOTEXTTOSEND						("412 * :No text to send")
 // # define ERR_RESTRICTED							"484 * :Your connection is restricted!"
 // # define ERR_NOTONCHANNEL(channel)				("442 * " + channel + ":You're not on that channel")
 // # define ERR_NOSUCHCHANNEL(channel)				("403 * #" + channel + ":No such channel")
@@ -149,10 +149,11 @@ namespace irc
 			int 	_PRIVMSG(string s_token, Client * client, string msg);
 			void    split(char * str, string & cmd, string & res);
 			size_t	params_calc(string params);
-			Client * find_client(string nick);
+			Client *find_client(string nick);
 			string 	check_nickNAMEs(std::vector<string> &vec);
 			void	trim_whiteSpaces(string &str);
 			string	check_nick_presence(string nick_toFind);
+			Client *getClientByName(string nick);
 
 			//ERROR THAT CAN'T BE DEFINED AS MACROS
 			string	ERR_TOOMANYTARGETS(string target)

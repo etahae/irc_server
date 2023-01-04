@@ -92,10 +92,7 @@ Client	*Server::_NOTICE(string s_token, string msg)
 int	Server::_PRIVMSG(string s_token, Client * client, string msg)
 {
 	if (s_token == "PRIVMSG\r\n" || s_token == "PRIVMSG\n")
-		return (send_msg(client, ERR_NORECIPIENT("PRIVMSG")), 0);
-	// if (s_token == "PRIVMSG" && msg == "")
-	// 	return (ERR_NOTEXTTOSEND, 0);
-	// size_t  i = 0;
+		return (send_msg(client, ERR_NORECIPIENT("PRIVMSG")), 1);
 	std::vector<string> cls;
 
 	char *client_nick;
@@ -117,9 +114,15 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
 		*(cls.end() - 1) = sms.substr(0, start);
 		sms = sms.substr(start + 1, sms.length() - 1);
 	}
+    else
+        sms = "";
     string valid_cls = check_nickNAMEs(cls);
     if (valid_cls != "")
-        return (send_msg(client, valid_cls), 0);
+        return (send_msg(client, valid_cls), 1);
+    if (sms == "")
+        return (send_msg(client, ERR_NOTEXTTOSEND), 1);
+    for (size_t i = 0; i < cls.size(); i++)
+        send_msg(this->find_client(cls[i]), ":server NOTICE " + cls[i] + ": " + sms);
     return (0);
 }
 
