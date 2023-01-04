@@ -46,3 +46,39 @@ Client * Server::find_client(string nick)
 			return this->clients[i];
 	return (nullptr);
 }
+
+void	Server::trim_whiteSpaces(string &str)
+{
+	size_t start = str.find_first_not_of(" \t");
+	size_t	end = str.find_last_not_of(" \n\t\r");
+	if (start != string::npos && end != string::npos)
+		str = str.substr(start, end - start + 1);
+	else if (start != string::npos)
+		str = str.substr(start, str.size() - start + 1);
+	else if (end != string::npos)
+		str = str.substr(0, end - 1);
+}
+
+string	Server::check_nick_presence(string nick_toFind)
+{
+	for (size_t i = 0; i < this->clients.size(); i++)
+		if (nick_toFind == this->clients[i]->nick)
+			return "";
+	return nick_toFind;
+}
+
+string	Server::check_nickNAMEs(std::vector<string> &cls)
+{
+	std::sort(cls.begin(), cls.end());
+	std::vector<string>::iterator it = std::unique(cls.begin(), cls.end());
+	if (it != cls.end())
+		return (ERR_TOOMANYTARGETS(*it));
+	string unfound;
+	for (size_t i = 0; i < cls.size(); i++)
+	{
+		unfound = check_nick_presence(cls[i]);
+		if (unfound != "")
+			return (ERR_NOSUCHNICK(unfound));
+	}
+	return ("");
+}

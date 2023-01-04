@@ -89,41 +89,6 @@ Client	*Server::_NOTICE(string s_token, string msg)
 	return nullptr;
 }
 
-void	trim_whiteSpaces(string &str)
-{
-	size_t start = str.find_first_not_of(" \t");
-	size_t	end = str.find_last_not_of(" \n\t\r");
-	if (start != string::npos && end != string::npos)
-		str = str.substr(start, end - start + 1);
-	else if (start != string::npos)
-		str = str.substr(start, str.size() - start + 1);
-	else if (end != string::npos)
-		str = str.substr(0, end - 1);
-}
-
-int	Server::check_nickNAMEs(std::vector<string> &vec)
-{
-	size_t count = 0;
-	for (size_t ii = 0; ii < this->clients.size(); ii++)
-	{
-		for (size_t i = 0; i < vec.size(); i++)
-		{
-			if (vec[i] == clients[ii]->nick)
-			{
-				count++;
-				if (count > 1)
-					return (1);
-			}
-		}
-		if (count == 0)
-			return (2);
-		count = 0;
-	}
-	if (vec.size() > clients.size())
-		return 1;
-	return (0);
-}
-
 int	Server::_PRIVMSG(string s_token, Client * client, string msg)
 {
 	if (s_token == "PRIVMSG\r\n" || s_token == "PRIVMSG\n")
@@ -152,15 +117,10 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
 		*(cls.end() - 1) = sms.substr(0, start);
 		sms = sms.substr(start + 1, sms.length() - 1);
 	}
-
-	std::sort(cls.begin(), cls.end());
-	std::vector<string>::iterator it = std::unique(cls.begin(), cls.end());
-	bool wasUnique = (it == cls.end());
-	if (wasUnique)
-		cout << "NO_Duolicates\n";
-	else
-		cout << "repeated clients\n";
-	return 0;
+    string valid_cls = check_nickNAMEs(cls);
+    if (valid_cls != "")
+        return (send_msg(client, valid_cls), 0);
+    return (0);
 }
 
 //To_DO :
