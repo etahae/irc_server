@@ -1,5 +1,6 @@
 #include "server.hpp"
 #include "client.hpp"
+#include <algorithm>
 
 using namespace irc;
 
@@ -151,10 +152,14 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
 		*(cls.end() - 1) = sms.substr(0, start);
 		sms = sms.substr(start + 1, sms.length() - 1);
 	}
-	if (!this->check_nickNAMEs(cls))
-		cout << "VALID\n";
+
+	std::sort(cls.begin(), cls.end());
+	std::vector<string>::iterator it = std::unique(cls.begin(), cls.end());
+	bool wasUnique = (it == cls.end());
+	if (wasUnique)
+		cout << "NO_Duolicates\n";
 	else
-		cout << "NOOOOO\n";
+		cout << "repeated clients\n";
 	return 0;
 }
 

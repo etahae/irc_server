@@ -19,8 +19,9 @@
 # define ERR_ALREADYREGISTRED					"462 * ::You may not reregister"
 # define ERR_NEEDMOREPARAMS(command)			("461 * " command ": Not enough parameters")
 #define ERR_NICKNAMEINUSE(nick)					(nick " :Nickname is already in use")
-#define ERR_NORECIPIENT(command)				(":No recipient given (" command ")")
-#define ERR_NOTEXTTOSEND						":No text to send"
+#define ERR_NORECIPIENT(command)				("411 * :No recipient given (" command ")")
+#define ERR_NOTEXTTOSEND						"412 * :No text to send"
+#define ERR_TOOMANYTARGETS(target)				("407 * :Duplicate recipients."
 // # define ERR_RESTRICTED							"484 * :Your connection is restricted!"
 // # define ERR_NOTONCHANNEL(channel)				("442 * " + channel + ":You're not on that channel")
 // # define ERR_NOSUCHCHANNEL(channel)				("403 * #" + channel + ":No such channel")
