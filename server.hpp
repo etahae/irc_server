@@ -110,34 +110,34 @@ namespace irc
 				s_token = token;
 				if (s_token == "NICK" || s_token == "USER" || s_token == "PASS"
 					|| s_token == "NOTICE" || s_token == "PRIVMSG" || s_token == "QUIT")
-				{
 					split(cmd, s_token, res);
-					this->_NICK(s_token, client, res);
-					this->_USER(s_token, client, res);
-					this->_PASS(s_token, client, res);
-					this->_NOTICE(s_token, client, res);
-					this->_PRIVMSG(s_token, client, res);
-					this->_QUIT(s_token, client, i);
-				}
+				this->_NICK(s_token, client, res);
+				this->_USER(s_token, client, res);
+				this->_PASS(s_token, client, res);
+				this->_NOTICE(s_token, client, res);
+				this->_PRIVMSG(s_token, client, res);
+				this->_QUIT(s_token, client, i);
 				return 0;
 			}
 
 			void	disconnect(size_t i, int fd)
 			{
-				if (this->clients[i - 4]->nick == "")
+				cout << "#######\n";
+				if (this->clients[i - 4] && this->clients[i - 4]->nick == "")
 					cout << DISCONNECTED << "_unknown_user" << " Disconnected" << endl;
 				else
 					cout << DISCONNECTED << this->clients[i - 4]->nick << " Disconnected" << endl;
 				FD_CLR(i, &this->r_socket);
 				FD_CLR(i, &this->w_socket);
 				close(fd);
-				cout << "**segfault test before**" << endl;
+				cout << "*" << endl;
 				if (this->clients.size() != 0)
 				{
 					delete this->clients[i - 4];
+					cout << "**" << endl;
 					this->clients.erase(this->clients.begin() + i - 4);
 				}
-				cout << "**segfault test after**" << endl;
+				cout << "***" << endl;
 			}
 
 			void	send_msg(Client *client, string msg)

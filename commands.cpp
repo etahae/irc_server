@@ -91,38 +91,41 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
 {
 	if (s_token == "PRIVMSG\r\n" || s_token == "PRIVMSG\n")
 		return (send_msg(client, ERR_NORECIPIENT("PRIVMSG")), 1);
-	std::vector<string> cls;
+    else if (s_token == "PRIVMSG")
+    {
+	    std::vector<string> cls;
 
-	char *client_nick;
-	string	result;
-	string	sms;
+        char *client_nick;
+        string	result;
+        string	sms;
 
-	client_nick = strtok(const_cast<char *> (msg.c_str()), ",");
-	while (client_nick != NULL)
-	{
-		result = client_nick;
-		trim_whiteSpaces(result);
-		cls.push_back(result);
-		client_nick = strtok(NULL, ",");
-	}
-	sms = *(cls.end() - 1);
-	size_t start = sms.find_first_of(" ");
-	if (start != string::npos)
-	{
-		*(cls.end() - 1) = sms.substr(0, start);
-		sms = sms.substr(start + 1, sms.length() - 1);
-	}
-    else
-        sms = "";
-    string valid_cls = check_nickNAMEs(cls);
-    if (valid_cls != "")
-        return (send_msg(client, valid_cls), 1);
-    if (sms == "")
-        return (send_msg(client, ERR_NOTEXTTOSEND), 1);
-    if (sms.find(':') == string::npos)
-        sms.insert(0, " : ");
-    for (size_t i = 0; i < cls.size(); i++)
-        send_msg(this->find_client(cls[i]), ":" + client->nick + " PRIVMSG " + cls[i] + sms);
+        client_nick = strtok(const_cast<char *> (msg.c_str()), ",");
+        while (client_nick != NULL)
+        {
+            result = client_nick;
+            trim_whiteSpaces(result);
+            cls.push_back(result);
+            client_nick = strtok(NULL, ",");
+        }
+        sms = *(cls.end() - 1);
+        size_t start = sms.find_first_of(" ");
+        if (start != string::npos)
+        {
+            *(cls.end() - 1) = sms.substr(0, start);
+            sms = sms.substr(start + 1, sms.length() - 1);
+        }
+        else
+            sms = "";
+        string valid_cls = check_nickNAMEs(cls);
+        if (valid_cls != "")
+            return (send_msg(client, valid_cls), 1);
+        if (sms == "")
+            return (send_msg(client, ERR_NOTEXTTOSEND), 1);
+        if (sms.find(':') == string::npos)
+            sms.insert(0, " : ");
+        for (size_t i = 0; i < cls.size(); i++)
+            send_msg(this->find_client(cls[i]), ":" + client->nick + " PRIVMSG " + cls[i] + sms);
+    }
     return (0);
 }
 
