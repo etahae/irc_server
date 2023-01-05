@@ -2,7 +2,7 @@ NAME = ircserv
 
 SOURCES = main.cpp commands.cpp server.cpp
 
-FLAGS = -fsanitize=address -Wall -Wextra -Werror
+FLAGS = -Wall -Wextra -Werror
 
 HEADERS = server.hpp
 

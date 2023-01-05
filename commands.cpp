@@ -126,6 +126,13 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
     return (0);
 }
 
+void    Server::_QUIT(string s_token, Client * client, int i)
+{
+    if (s_token == "QUIT\r\n" || s_token == "QUIT\n" || s_token == "QUIT")
+        this->disconnect(i, client->fd_socket);
+        // cout << client->nick << " wants to quit" << endl;
+}
+
 //To_DO :
 //MULTI client in PRIVMSG arguments
 //CHECK repetitive clients if found return error :

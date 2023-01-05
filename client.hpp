@@ -9,6 +9,7 @@
 #include <vector>
 #include <cstring>
 #include "server.hpp"
+// #include "channel.hpp"
 
 using std::string;
 using std::cout;
@@ -27,6 +28,7 @@ namespace irc
 			int		fd_socket;
 			struct	sockaddr_in sock_addr;
 			bool	verified;
+			// std::vector<Channel *> channels;
 			//vector channel
 
 			//constructors

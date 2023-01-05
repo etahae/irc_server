@@ -72,7 +72,7 @@ int main(int argc, char **argv){
 						std::cout << buffer << std::flush;
 						if (server.clients[i - 4]->verified == false)
 						{
-							if (server.client_verifying(buffer, server.clients[i - 4]))
+							if (server.client_verifying(buffer, server.clients[i - 4], i))
 							{
 								if (server.clients[i - 4]->verified == false)
 								{
@@ -87,7 +87,7 @@ int main(int argc, char **argv){
 							}
 						}
 						else
-							server.customer_service(buffer, server.clients[i - 4]);
+							server.customer_service(buffer, server.clients[i - 4], i);
 						if (server.clients[i - 4]->verified == true)
 							write(server.clients[i - 4]->fd_socket, VERIFIED, strlen(VERIFIED));
 					}
