@@ -69,9 +69,10 @@ int main(int argc, char **argv){
 						return 1;
 					if (n > 0)
 					{
-						std::cout << buffer << std::flush;
+						// std::cout << buffer << std::flush;
 						if (server.clients[i - 4]->verified == false)
 						{
+							server.limechatParse(buffer, server.clients[i - 4], i);
 							if (server.client_verifying(buffer, server.clients[i - 4], i))
 							{
 								if (server.clients[i - 4]->verified == false)

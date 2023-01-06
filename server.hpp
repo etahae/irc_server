@@ -158,6 +158,7 @@ namespace irc
 			string 	check_nickNAMEs(std::vector<string> &vec);
 			void	trim_whiteSpaces(string &str);
 			string	check_nick_presence(string nick_toFind);
+			void	limechatParse(char *str, Client *cls, int i);
 
 			//ERROR THAT CAN'T BE DEFINED AS MACROS
 			string	ERR_TOOMANYTARGETS(string target)
