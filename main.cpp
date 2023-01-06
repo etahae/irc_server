@@ -72,7 +72,7 @@ int main(int argc, char **argv){
 						// std::cout << buffer << std::flush;
 						if (server.clients[i - 4]->verified == false)
 						{
-							server.limechatParse(buffer, server.clients[i - 4], i);
+							server.clientParse(buffer, server.clients[i - 4], i);
 							if (server.client_verifying(buffer, server.clients[i - 4], i))
 							{
 								if (server.clients[i - 4]->verified == false)

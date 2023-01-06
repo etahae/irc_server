@@ -136,24 +136,6 @@ void    Server::_QUIT(string s_token, Client * client, int i)
         // cout << client->nick << " wants to quit" << endl;
 }
 
-void	Server::limechatParse(char *str, Client *cls, int ii)
-{
-	if (!str)
-		return ;
-	std::vector<string> cmds;
-	char *cmd;
-	cmd = strtok(str, "\n");
-	while (cmd != NULL)  
-	{
-		cmds.push_back(cmd); 
-		cmd = strtok (NULL, "\n");  
-	}
-	if (cmds.size() < 2)
-		return ;
-	for (size_t i = 0; i < cmds.size(); i++)
-		client_verifying(const_cast<char *>(cmds[i].c_str()), cls, ii);
-}
-
 //To_DO :
 //MULTI client in PRIVMSG arguments
 //CHECK repetitive clients if found return error :
