@@ -127,22 +127,14 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
         else if (sms[find_pts + 1] != ' ')
             sms.insert(find_pts + 1, " ");
         sms.insert(0, " ");
-        cout << "#" << sms << "#" << endl;
         for (size_t i = 0; i < cls.size(); i++)
             send_msg(this->find_client(cls[i]), ":" + client->nick + " PRIVMSG " + cls[i] + sms);
     }
     return (0);
 }
 
-void    Server::_QUIT(string s_token, Client * client, int i)
+void    Server::_QUIT(string s_token, Client * client, int i, size_t index)
 {
     if (s_token == "QUIT\r\n" || s_token == "QUIT\n" || s_token == "QUIT")
-        this->disconnect(i, client->fd_socket);
-        // cout << client->nick << " wants to quit" << endl;
+        this->disconnect(index, i, client->fd_socket);
 }
-
-//To_DO :
-//MULTI client in PRIVMSG arguments
-//CHECK repetitive clients if found return error :
-//		ERR_TOOMANYTARGETS
-//                    "<target> :Duplicate recipients. No message 

@@ -70,7 +70,7 @@ namespace irc
 				return 0;
 			}
 
-			int	client_verifying(char * cmd, Client * client, int i)
+			int	client_verifying(char * cmd, Client * client, int i, size_t index)
 			{
 				if (!cmd || *cmd == 0)
 					return 0;
@@ -92,13 +92,13 @@ namespace irc
 				this->_NICK(s_token, client, res);
 				this->_USER(s_token, client, res);
 				this->_PASS(s_token, client, res);
-				this->_QUIT(s_token, client, i);
+				this->_QUIT(s_token, client, i, index);
 				if (client->nick != "" && client->username != "" && client->pass == this->password)
 					return 1;
 				return 0;
 			}
 
-			int	customer_service(char * cmd, Client * client, int i)
+			int	customer_service(char * cmd, Client * client, int i, size_t index)
 			{
 				if (!cmd || *cmd == 0)
 					return 0;
@@ -116,26 +116,26 @@ namespace irc
 				this->_PASS(s_token, client, res);
 				this->_NOTICE(s_token, client, res);
 				this->_PRIVMSG(s_token, client, res);
-				this->_QUIT(s_token, client, i);
+				this->_QUIT(s_token, client, i, index);
 				return 0;
 			}
 
-			void	disconnect(size_t i, int fd)
+			void	disconnect(size_t index, size_t i, int fd)
 			{
 				cout << "#######\n";
-				if (this->clients[i - 4] && this->clients[i - 4]->nick == "")
+				if (this->clients[index] && this->clients[index]->nick == "")
 					cout << DISCONNECTED << "_unknown_user" << " Disconnected" << endl;
 				else
-					cout << DISCONNECTED << this->clients[i - 4]->nick << " Disconnected" << endl;
+					cout << DISCONNECTED << this->clients[index]->nick << " Disconnected" << endl;
 				FD_CLR(i, &this->r_socket);
 				FD_CLR(i, &this->w_socket);
 				close(fd);
 				cout << "*" << endl;
 				if (this->clients.size() != 0)
 				{
-					delete this->clients[i - 4];
+					delete this->clients[index];
 					cout << "**" << endl;
-					this->clients.erase(this->clients.begin() + i - 4);
+					this->clients.erase(this->clients.begin() + index);
 				}
 				cout << "***" << endl;
 			}
@@ -151,14 +151,13 @@ namespace irc
 			void	_PASS(string s_token, Client * client, string pass);
 			void	_NOTICE(string s_token, Client * client, string pass);
 			int 	_PRIVMSG(string s_token, Client * client, string msg);
-			void	_QUIT(string s_token, Client * client, int i);
+			void	_QUIT(string s_token, Client * client, int i, size_t index);
 			void    split(char * str, string & cmd, string & res);
 			size_t	params_calc(string params);
 			Client *find_client(string nick);
 			string 	check_nickNAMEs(std::vector<string> &vec);
 			void	trim_whiteSpaces(string &str);
 			string	check_nick_presence(string nick_toFind);
-			void	clientParse(char *str, Client *cls, int i);
 
 			//ERROR THAT CAN'T BE DEFINED AS MACROS
 			string	ERR_TOOMANYTARGETS(string target)

@@ -2,7 +2,7 @@
 
 using namespace irc;
 
-bool	is_digits_or_length_over(char *str)
+bool is_digits_or_length_over(char *str)
 {
 	int i = 0;
 
@@ -22,7 +22,55 @@ bool	is_digits_or_length_over(char *str)
 	return false;
 }
 
-int main(int argc, char **argv){
+int	findClientIndexByFD(Server &server, int fd)
+{
+	for(size_t i = 0; i < server.clients.size(); i++)
+		if (server.clients[i]->fd_socket == fd)
+			return i;
+	return -1;
+}
+
+void connect(Server &server, char *buffer, int i, size_t index)
+{
+	std::cout << buffer << std::flush;
+	size_t char_index = 0;
+	string str_buffer;
+	while (buffer[char_index])
+	{
+		while (buffer[char_index] != '\n' && buffer[char_index])
+		{
+			str_buffer += buffer[char_index];
+			char_index++;
+		}
+		str_buffer += buffer[char_index];
+		char_index++;
+		if (server.clients[index]->verified == false)
+		{
+			if (server.client_verifying(const_cast<char *>(str_buffer.c_str()), server.clients[index], i, index))
+			{
+				if (server.clients[index]->verified == false)
+				{
+					std::string rpl = ":Rαɠɳαɾöƙ 001 " + server.clients[index]->nick + " : welcome to the internet relay chat\r\n"
+					":Rαɠɳαɾöƙ 002 " + server.clients[index]->nick + " :Your host is Rαɠɳαɾöƙ, running version 1.0\r\n"
+					":Rαɠɳαɾöƙ 003 " + server.clients[index]->nick + " :This server was created 28/12/2022\r\n"
+					":Rαɠɳαɾöƙ 004 " + server.clients[index]->nick + " Rαɠɳαɾöƙ 1.0 - -\r\n"
+					":Rαɠɳαɾöƙ 372 " + server.clients[index]->nick + " 🔨 𝔚𝔢𝔩𝔠𝔬𝔪𝔢 𝔗𝔬 Rαɠɳαɾöƙ 🔨\r\n";
+					write(server.clients[index]->fd_socket, rpl.c_str(), rpl.size());
+					server.clients[index]->verified = true;
+					cout << CONNECTED << server.clients[index]->nick << " Connected" << endl;
+				}
+			}
+		}
+		else
+			server.customer_service(const_cast<char *>(str_buffer.c_str()), server.clients[index], i, index);
+		str_buffer = "";
+	}
+	if (server.clients[index]->verified == true)
+		write(server.clients[index]->fd_socket, VERIFIED, strlen(VERIFIED));
+}
+
+int main(int argc, char **argv)
+{
 
 	Server server;
 
@@ -38,7 +86,7 @@ int main(int argc, char **argv){
 	fd_set tmp_r_socket, tmp_w_socket;
 	FD_ZERO(&server.r_socket);
 	FD_ZERO(&server.w_socket);
-	FD_SET(server._socket, &server.r_socket);	//this to read from client sockets and accept them
+	FD_SET(server._socket, &server.r_socket); // this to read from client sockets and accept them
 
 	char buffer[ARG_MAX];
 
@@ -48,68 +96,34 @@ int main(int argc, char **argv){
 		tmp_w_socket = server.w_socket;
 		if (select(FD_SETSIZE, &tmp_r_socket, &tmp_w_socket, 0, 0) < 0)
 			return 1;
-		for (int i = 0; i < FD_SETSIZE; i++){
+		for (int i = 0; i < FD_SETSIZE; i++)
+		{
 			if (FD_ISSET(i, &tmp_r_socket))
 			{
 				if (i == server._socket)
 				{
 					client_size = sizeof(client_addr);
-					int acc = accept(server._socket, (struct sockaddr *) &client_addr, &client_size);
-					if (acc < 0) return (server.fatal_error("accept failure"));
+					int acc = accept(server._socket, (struct sockaddr *)&client_addr, &client_size);
+					if (acc < 0)
+						return (server.fatal_error("accept failure"));
 					FD_SET(acc, &server.r_socket);
 					FD_SET(acc, &server.w_socket);
 					server.clients.push_back(new Client(acc, client_addr, inet_ntoa(client_addr.sin_addr)));
-					// (*server.clients.end() - 1)->ip_address = inet_ntoa(client_addr.sin_addr);
 				}
 				else
 				{
+					int	client_index = findClientIndexByFD(server, i);
 					bzero(buffer, ARG_MAX);
 					int n;
-					if ((n = read(server.clients[i - 4]->fd_socket, buffer, ARG_MAX)) < 0)
-						return 1;
-					if (n > 0)
+					if (client_index >= 0)
 					{
-						// std::cout << buffer << std::flush;
-						size_t index = 0;
-						string str_buffer;
-						while (buffer[index])
-						{
-							while (buffer[index] != '\n' && buffer[index])
-							{
-								str_buffer += buffer[index];
-								index++;
-							}
-							str_buffer += buffer[index];
-							index++;
-								cout << "*" << str_buffer << "*" << endl;
-							if (server.clients[i - 4]->verified == false)
-							{
-							// server.clientParse(buffer, server.clients[i - 4], i);
-								if (server.client_verifying(const_cast<char *>(str_buffer.c_str()), server.clients[i - 4], i))
-								{
-									if (server.clients[i - 4]->verified == false)
-									{
-										std::string rpl = ":Rαɠɳαɾöƙ 001 " + server.clients[i - 4]->nick + " : welcome to the internet relay chat\r\n"
-										":Rαɠɳαɾöƙ 002 " + server.clients[i - 4]->nick + " :Your host is Rαɠɳαɾöƙ, running version 1.0\r\n"
-										":Rαɠɳαɾöƙ 003 " + server.clients[i - 4]->nick + " :This server was created 28/12/2022\r\n"
-										":Rαɠɳαɾöƙ 004 " + server.clients[i - 4]->nick + " Rαɠɳαɾöƙ 1.0 - -\r\n"
-										":Rαɠɳαɾöƙ 372 " + server.clients[i - 4]->nick + "               🔨 𝔚𝔢𝔩𝔠𝔬𝔪𝔢 𝔗𝔬 Rαɠɳαɾöƙ 🔨\r\n";
-										write(server.clients[i - 4]->fd_socket, rpl.c_str(), rpl.size());
-										server.clients[i - 4]->verified = true;
-										cout << CONNECTED << server.clients[i - 4]->nick << " Connected" << endl;
-										// return (":server NOTICE taha : JOJO\r\n");
-									}
-								}
-							}
-							else
-								server.customer_service(const_cast<char *>(str_buffer.c_str()), server.clients[i - 4], i);
-							str_buffer = "";
-						}
-						if (server.clients[i - 4]->verified == true)
-							write(server.clients[i - 4]->fd_socket, VERIFIED, strlen(VERIFIED));
+						if ((n = read(server.clients[client_index]->fd_socket, buffer, ARG_MAX)) < 0)
+							return 1;
+						if (n > 0)
+							connect(server, buffer, i, client_index);
+						if (n == 0)
+							server.disconnect(client_index, i, server.clients[client_index]->fd_socket);
 					}
-					if (n == 0)
-						server.disconnect(i, server.clients[i - 4]->fd_socket);
 				}
 			}
 		}
@@ -117,25 +131,25 @@ int main(int argc, char **argv){
 	return (0);
 }
 
-//socket function returns int server_socket : takes three parameters : 
-	// first one : int domain : AF_INET (ipv4)
-	// second one : int type : sock_stream (TCP)
-	// third one : int protocol : 0 (default tcp protocol)
+// socket function returns int server_socket : takes three parameters :
+//  first one : int domain : AF_INET (ipv4)
+//  second one : int type : sock_stream (TCP)
+//  third one : int protocol : 0 (default tcp protocol)
 
-//bind function returns 0 succes , -1 failure : take three parameters :
-	// first one : int server_socket
-	// second one : struct sockaddr *
-	// third one :  socklen_t (size of sockaddr)
+// bind function returns 0 succes , -1 failure : take three parameters :
+//  first one : int server_socket
+//  second one : struct sockaddr *
+//  third one :  socklen_t (size of sockaddr)
 
-// struct sockaddr { sa_family_t sa_family ; 
+// struct sockaddr { sa_family_t sa_family ;
 //                   char sa_data[14]; }
 
-//listen function returns 0 succes , -1 failure : takes two parameters :
-	// first one : int server_socket
-	//second one : the max connections allowed in the server
+// listen function returns 0 succes , -1 failure : takes two parameters :
+//  first one : int server_socket
+// second one : the max connections allowed in the server
 
-//accept function returns : take three parameters :
-	// first one : int server_socket
-	// second one : (struct sockaddr *) & addr
-	// third  one : & socklen
-	// (waits for the connection function in the client to connect)
+// accept function returns : take three parameters :
+//  first one : int server_socket
+//  second one : (struct sockaddr *) & addr
+//  third  one : & socklen
+//  (waits for the connection function in the client to connect)

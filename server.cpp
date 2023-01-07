@@ -82,23 +82,3 @@ string	Server::check_nickNAMEs(std::vector<string> &cls)
 	}
 	return ("");
 }
-
-void	Server::clientParse(char *str, Client *cls, int ii)
-{
-	if (!str)
-		return ;
-    char *str_dup = strdup(str);
-	std::vector<string> cmds;
-	char *cmd;
-
-	cmd = strtok(str_dup, "\n");
-	while (cmd != NULL)  
-	{
-		cmds.push_back(cmd); 
-		cmd = strtok (NULL, "\n");  
-	}
-	if (cmds.size() < 2)
-		return ;
-	for (size_t i = 0; i < cmds.size(); i++)
-		client_verifying(const_cast<char *>(cmds[i].c_str()), cls, ii);
-}
