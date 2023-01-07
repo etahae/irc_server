@@ -80,7 +80,7 @@ void    Server::_NOTICE(string s_token, Client * client, string msg)
             Client * receiver = find_client(nick_name);
             if (receiver != nullptr)
             {
-                string letter = ":" + client->nick + " PRIVMSG " + string(nick_name) + " :" + msg_token;
+                string letter = ":" + client->nick + " PRIVMSG " + string(nick_name) + " : " + msg_token;
                 send_msg(receiver, letter);
             }
         }
@@ -121,8 +121,13 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
             return (send_msg(client, valid_cls), 1);
         if (sms == "")
             return (send_msg(client, ERR_NOTEXTTOSEND), 1);
-        if (sms.find(':') == string::npos)
-            sms.insert(0, " : ");
+        size_t find_pts = sms.find(':');
+        if (find_pts == string::npos)
+            sms.insert(0, ": ");
+        else if (sms[find_pts + 1] != ' ')
+            sms.insert(find_pts + 1, " ");
+        sms.insert(0, " ");
+        cout << "#" << sms << "#" << endl;
         for (size_t i = 0; i < cls.size(); i++)
             send_msg(this->find_client(cls[i]), ":" + client->nick + " PRIVMSG " + cls[i] + sms);
     }

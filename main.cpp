@@ -70,26 +70,41 @@ int main(int argc, char **argv){
 					if (n > 0)
 					{
 						// std::cout << buffer << std::flush;
-						if (server.clients[i - 4]->verified == false)
+						size_t index = 0;
+						string str_buffer;
+						while (buffer[index])
 						{
-							server.clientParse(buffer, server.clients[i - 4], i);
-							if (server.client_verifying(buffer, server.clients[i - 4], i))
+							while (buffer[index] != '\n' && buffer[index])
 							{
-								if (server.clients[i - 4]->verified == false)
+								str_buffer += buffer[index];
+								index++;
+							}
+							str_buffer += buffer[index];
+							index++;
+								cout << "*" << str_buffer << "*" << endl;
+							if (server.clients[i - 4]->verified == false)
+							{
+							// server.clientParse(buffer, server.clients[i - 4], i);
+								if (server.client_verifying(const_cast<char *>(str_buffer.c_str()), server.clients[i - 4], i))
 								{
-									std::string rpl = ":Rαɠɳαɾöƙ 001 " + server.clients[i - 4]->nick + " :        🔨 𝔚𝔢𝔩𝔠𝔬𝔪𝔢 𝔗𝔬 ℑ𝔫𝔱𝔢𝔯𝔫𝔢𝔱 ℜ𝔢𝔩𝔞𝔶 ℭ𝔥𝔞𝔱 🔨\r\n"
-									":Rαɠɳαɾöƙ 002 " + server.clients[i - 4]->nick + " :Your host is Rαɠɳαɾöƙ, running version 1.0\r\n"
-									":Rαɠɳαɾöƙ 003 " + server.clients[i - 4]->nick + " :This server was created 28/12/2022\r\n"
-									":Rαɠɳαɾöƙ 004 " + server.clients[i - 4]->nick + " Rαɠɳαɾöƙ 1.0 - -\r\n";
-									write(server.clients[i - 4]->fd_socket, rpl.c_str(), rpl.size());
-									server.clients[i - 4]->verified = true;
-									cout << CONNECTED << server.clients[i - 4]->nick << " Connected" << endl;
-									// return (":server NOTICE taha : JOJO\r\n");
+									if (server.clients[i - 4]->verified == false)
+									{
+										std::string rpl = ":Rαɠɳαɾöƙ 001 " + server.clients[i - 4]->nick + " : welcome to the internet relay chat\r\n"
+										":Rαɠɳαɾöƙ 002 " + server.clients[i - 4]->nick + " :Your host is Rαɠɳαɾöƙ, running version 1.0\r\n"
+										":Rαɠɳαɾöƙ 003 " + server.clients[i - 4]->nick + " :This server was created 28/12/2022\r\n"
+										":Rαɠɳαɾöƙ 004 " + server.clients[i - 4]->nick + " Rαɠɳαɾöƙ 1.0 - -\r\n"
+										":Rαɠɳαɾöƙ 372 " + server.clients[i - 4]->nick + "               🔨 𝔚𝔢𝔩𝔠𝔬𝔪𝔢 𝔗𝔬 Rαɠɳαɾöƙ 🔨\r\n";
+										write(server.clients[i - 4]->fd_socket, rpl.c_str(), rpl.size());
+										server.clients[i - 4]->verified = true;
+										cout << CONNECTED << server.clients[i - 4]->nick << " Connected" << endl;
+										// return (":server NOTICE taha : JOJO\r\n");
+									}
 								}
 							}
+							else
+								server.customer_service(const_cast<char *>(str_buffer.c_str()), server.clients[i - 4], i);
+							str_buffer = "";
 						}
-						else
-							server.customer_service(buffer, server.clients[i - 4], i);
 						if (server.clients[i - 4]->verified == true)
 							write(server.clients[i - 4]->fd_socket, VERIFIED, strlen(VERIFIED));
 					}
