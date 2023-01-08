@@ -17,7 +17,7 @@ void	Server::_NICK(string s_token, Client * client, string nick)
             if (this->clients[i]->nick == client->nick)
                 n++;
             if (n > 1){
-                string dup = "433 * " + client->nick + ":Nickname is already in use\r\n";
+                string dup = "433 * " + client->nick + ":Nickname is already in use";
                 send_msg(client, dup);
                 client->nick = "";
                 break ;
