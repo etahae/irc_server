@@ -122,7 +122,6 @@ namespace irc
 
 			void	disconnect(size_t index, size_t i, int fd)
 			{
-				cout << "#######\n";
 				if (this->clients[index] && this->clients[index]->nick == "")
 					cout << DISCONNECTED << "_unknown_user" << " Disconnected" << endl;
 				else
@@ -130,14 +129,11 @@ namespace irc
 				FD_CLR(i, &this->r_socket);
 				FD_CLR(i, &this->w_socket);
 				close(fd);
-				cout << "*" << endl;
 				if (this->clients.size() != 0)
 				{
 					delete this->clients[index];
-					cout << "**" << endl;
 					this->clients.erase(this->clients.begin() + index);
 				}
-				cout << "***" << endl;
 			}
 
 			void	send_msg(Client *client, string msg)
