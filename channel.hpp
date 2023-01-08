@@ -11,44 +11,45 @@ namespace irc
 {
 	class Channel
 	{
-		string	ch_name;
-		string	passwd;
-		size_t	max_numbers;
-		string	modes; //oip...
-		// std::vector<Client *> operators;
-		// std::vector<Client *> members;
-		// std::vector<Client *> bans;
+		public :
+			string	ch_name;
+			string	passwd;
+			size_t	max_numbers;
+			string	modes; //oip...
+			// std::vector<Client *> operators;
+			// std::vector<Client *> members;
+			// std::vector<Client *> bans;
 
-		std::map<string, Client *> members;
-		std::map<string, Client *> bans;
-		std::map<string, Client *> operators;
+			std::map<string, Client *> members;
+			std::map<string, Client *> bans;
+			std::map<string, Client *> operators;
 
-		Channel():ch_name(""),passwd(""),max_numbers(9999) {}
-		Channel(string name, string pass):ch_name(name),passwd(pass),max_numbers(9999) {}
-		
-		void	joinChannel(string name, string pass, Client *cl)
-		{
-			string err = "";
-			//check no pass or name given
-			if(bans.find(cl->nick) != bans.end())	//ban member
-				err = "474 * " + this->ch_name + " :Cannot join channel (+b)";
-			else if (members.size() >= max_numbers)	//channel reach it's max member
-				err = "471 * " + this->ch_name + " :Cannot join channel (+l)";
-			else if (name == ch_name && pass != pass)	//password not match
-				err = "475 * " + this->ch_name + " :Cannot join channel (+k)";
-			else if (name == ch_name && pass == pass)
+			Channel():ch_name(""),passwd(""),max_numbers(9999) {}
+			Channel(string name, string pass):ch_name(name),passwd(pass),max_numbers(9999) {}
+			
+			void	joinChannel(string name, string pass, Client *cl)
 			{
-				if(this->operators.size() == 0)
-					operators.insert(std::pair<string,Client *> (cl->nick, cl));
-				members.insert(std::pair<string,Client *> (cl->nick, cl));
+				string err = "";
+				//check no pass or name given
+				if(bans.find(cl->nick) != bans.end())	//ban member
+					err = "474 * " + this->ch_name + " :Cannot join channel (+b)";
+				else if (members.size() >= max_numbers)	//channel reach it's max member
+					err = "471 * " + this->ch_name + " :Cannot join channel (+l)";
+				else if (name == ch_name && pass != pass)	//password not match
+					err = "475 * " + this->ch_name + " :Cannot join channel (+k)";
+				else if (name == ch_name && pass == pass)
+				{
+					if(this->operators.size() == 0)
+						operators.insert(std::pair<string,Client *> (cl->nick, cl));
+					members.insert(std::pair<string,Client *> (cl->nick, cl));
+				}
+				if (err != "")
+				{
+					send_err(cl, err);
+					return ;
+				}
 			}
-			if (err != "")
-			{
-				send_err(cl, err);
-				return ;
-			}
-		}
-		void	send_err(Client *client, string msg);
+			void	send_err(Client *client, string msg);
 	};
 
 	int	validateChannelName(const string &str)
