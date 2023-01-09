@@ -4,7 +4,8 @@
 #define CONNECTED "\033[0;32m • \033[0m"
 #define DISCONNECTED "\033[0;31m • \033[0m"
 
-#include"client.hpp"
+#include "client.hpp"
+#include "channel.hpp"
 
 // REPLIES
 // #define RPL_LIST(channel, usersCount)			("322 * #" + channel + " " + usersCount)
@@ -27,7 +28,7 @@
 // # define ERR_CHANOPRIVSNEEDED(channel)			("482 * #" + channel + ":You're not channel operator")
 // # define ERR_USERNOTINCHANNEL(nick, channel)	("441 * " + nick + " #" + channel + ":They aren't on that channel")
 // # define ERR_BADCHANMASK(channel)				("476 * #" + channel + ":Bad Channel Mask")
-
+class Channel;
 namespace irc
 {
 	class Server{
@@ -39,6 +40,7 @@ namespace irc
 			fd_set				r_socket, w_socket;
 			std::vector<Client *>	clients;
 			struct sockaddr_in	server_addr;
+			std::map<string, Channel *> channels;
 
 			~Server()
 			{
@@ -109,13 +111,15 @@ namespace irc
 				token = std::strtok(token, " ");
 				s_token = token;
 				if (s_token == "NICK" || s_token == "USER" || s_token == "PASS"
-					|| s_token == "NOTICE" || s_token == "PRIVMSG" || s_token == "QUIT")
+					|| s_token == "NOTICE" || s_token == "PRIVMSG" || s_token == "QUIT"
+					|| s_token== "JOIN")
 					split(cmd, s_token, res);
 				this->_NICK(s_token, client, res);
 				this->_USER(s_token, client, res);
 				this->_PASS(s_token, client, res);
 				this->_NOTICE(s_token, client, res);
 				this->_PRIVMSG(s_token, client, res);
+				this->_JOIN(s_token, client, res);
 				this->_QUIT(s_token, client, i, index);
 				return 0;
 			}
@@ -143,6 +147,7 @@ namespace irc
 			}
 
 			void	_NICK(string s_token, Client * client, string nick);
+			void	_JOIN(string s_token, Client * client, string chann);
 			void	_USER(string s_token, Client * client, string user);
 			void	_PASS(string s_token, Client * client, string pass);
 			void	_NOTICE(string s_token, Client * client, string pass);
