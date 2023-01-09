@@ -49,25 +49,24 @@ namespace irc
 					return ;
 				}
 			}
-			void	send_err(Client *client, string msg);
-	};
+			int	validateChannelName(const string &str)
+			{
+				string channelRegex = "ABCDEFGHIKLMNOPQRSTVXYZabcdefghijklmnopqrstuvwxyz\r\n";
+				
+				int position = str.find_last_not_of(channelRegex);
+				cout << position << endl;
+				if (position == 0)
+					if (str[0] == '&' || str[0] == '#')
+						return 1;
+				return 0;
+			}
 
-	int	validateChannelName(const string &str)
-	{
-		string channelRegex = "ABCDEFGHIKLMNOPQRSTVXYZabcdefghijklmnopqrstuvwxyz\r\n";
-		
-		int position = str.find_last_not_of(channelRegex);
-		cout << position << endl;
-		if (position == 0)
-			if (str[0] == '&' || str[0] == '#')
-				return 1;
-		return 0;
-	}
-	void	send_err(Client *client, string msg)
-	{
-		msg = msg + "\r\n";
-		write(client->fd_socket, msg.c_str(), msg.size());
-	}
+			void	send_err(Client *client, string msg)
+			{
+				msg = msg + "\r\n";
+				write(client->fd_socket, msg.c_str(), msg.size());
+			}
+	};
 }
 
 
