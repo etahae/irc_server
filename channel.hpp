@@ -27,17 +27,20 @@ namespace irc
 			Channel():ch_name(""),passwd(""),max_numbers(9999) {}
 			Channel(string name, string pass):ch_name(name),passwd(pass),max_numbers(9999) {}
 			
-			void	joinChannel(string name, string pass, Client *cl)
+			void	joinChannel(string name, const string &pass, Client *cl)
 			{
 				string err = "";
+				(void)name;
 				//check no pass or name given
 				if(bans.find(cl->nick) != bans.end())	//ban member
 					err = "474 * " + this->ch_name + " :Cannot join channel (+b)";
 				else if (members.size() >= max_numbers)	//channel reach it's max member
 					err = "471 * " + this->ch_name + " :Cannot join channel (+l)";
-				else if (name == ch_name && pass != pass)	//password not match
+				else if (pass != passwd)	//password not match
 					err = "475 * " + this->ch_name + " :Cannot join channel (+k)";
-				else if (name == ch_name && pass == pass)
+				else if (this->members.find(cl->nick) != this->members.end())
+					err = "443 * " + cl->nick + " " + ch_name + " :is already on channel";
+				else
 				{
 					if(this->operators.size() == 0)
 						operators.insert(std::pair<string,Client *> (cl->nick, cl));
@@ -47,6 +50,12 @@ namespace irc
 				{
 					send_err(cl, err);
 					return ;
+				}
+				for (std::map<string, Client*>::iterator it = members.begin(); it != members.end(); it++)
+				{
+					string msg = " : " +cl->nick + " joined " + this->ch_name;
+					// send_err(it->second, msg);
+					send_err(it->second, ":" + cl->nick + " PRIVMSG " + it->first + msg);
 				}
 			}
 			int	validateChannelName(const string &str)
