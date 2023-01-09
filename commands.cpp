@@ -3,7 +3,7 @@
 #include <algorithm>
 
 using namespace irc;
-
+int	find_spaceInBetween(string str);
 void	Server::_NICK(string s_token, Client * client, string nick)
 {
     int n = 0;
@@ -137,4 +137,72 @@ void    Server::_QUIT(string s_token, Client * client, int i, size_t index)
 {
     if (s_token == "QUIT\r\n" || s_token == "QUIT\n" || s_token == "QUIT")
         this->disconnect(index, i, client->fd_socket);
+}
+
+void	Server::_JOIN(string s_token, Client * client, string chann)
+{
+	string chns;
+	string keys;
+	char*	str;
+	std::vector<string> v_channels;
+	std::vector<string> v_keys;
+	if (s_token == "JOIN\r\n" || s_token == "JOIN\n" || (s_token == "JOIN" && chann == ""))
+		send_msg(client, ERR_NEEDMOREPARAMS("JOIN"));
+	else if (s_token == "JOIN")
+	{
+		int i = find_spaceInBetween(chann);
+		if (i)
+		{
+			chns = chann.substr(0, i);
+			keys = chann.substr(i, chann.size() - i);
+			str = strtok(const_cast<char *>(chns.c_str()), ",");
+			while (str != NULL)
+			{
+				string tmp = str;
+				Server::trim_whiteSpaces(tmp);
+				v_channels.push_back(tmp);
+				str = strtok(NULL, ",");
+			}
+			str = strtok(const_cast<char *>(keys.c_str()), ",");
+			while (str != NULL)
+			{
+				string tmp = str;
+				Server::trim_whiteSpaces(tmp);
+				v_keys.push_back(tmp);
+				str = strtok(NULL, ",");
+			}
+			if (v_keys.size() != v_channels.size())
+			{
+				send_msg(client, ERR_NEEDMOREPARAMS("JOIN_"));
+				return ;
+			}
+			for (size_t i = 0; i < v_keys.size(); i++)
+			{
+				if (this->channels.find(v_channels[i]) == this->channels.end())
+					this->channels.insert(std::pair<string, Channel *>(v_channels[i], new Channel(v_channels[i], v_keys[i])));
+				this->channels.find(v_channels[i])->second->joinChannel(v_channels[i], v_keys[i], client);
+			}
+		}
+		else
+			send_msg(client, ERR_NEEDMOREPARAMS("_JOIN"));
+	}
+}
+
+int	find_spaceInBetween(string str)
+{
+	for (size_t i = 1; i < str.size(); i++)
+	{
+		if (str[i] == ' ' && isalnum(str[i - 1]))
+		{
+			for (size_t j = i; j < str.size(); j++)
+			{
+				i = j;
+				if (str[j] != ' ')
+					break ;
+			}
+			if (isalnum(str[i]))
+				return (i - 1);
+		}
+	}
+	return 0;
 }
