@@ -117,8 +117,9 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
         else
             sms = "";
         string valid_cls = check_nickNAMEs(cls);
-        if (valid_cls != "")
-            return (send_msg(client, valid_cls), 1);
+		string valid_chan = check_channNAMEs(cls);
+		if (valid_cls != "" && valid_chan != "")
+			return (send_msg(client, valid_chan), 1);
         if (sms == "")
             return (send_msg(client, ERR_NOTEXTTOSEND), 1);
         size_t find_pts = sms.find(':');
@@ -127,9 +128,20 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
         else if (sms[find_pts + 1] != ' ')
             sms.insert(find_pts + 1, " ");
         sms.insert(0, " ");
-        for (size_t i = 0; i < cls.size(); i++)
-            send_msg(this->find_client(cls[i]), ":" + client->nick + " PRIVMSG " + cls[i] + sms);
-    }
+		if (valid_cls == "")
+        	for (size_t i = 0; i < cls.size(); i++)
+            	send_msg(this->find_client(cls[i]), ":" + client->nick + " PRIVMSG " + cls[i] + sms);
+		else
+		{
+			for (size_t i = 0; i < cls.size(); i++)
+			{
+				std::map<string, Channel *>::iterator target_chan = this->channels.find(cls[i]);
+				for (std::map<string, Client *>::iterator it = target_chan->second->members.begin(); it != target_chan->second->members.end(); it++)
+					if (it->first != client->nick)
+            			send_msg(it->second, ":" + it->first + " PRIVMSG " + cls[i] + sms);
+			}
+		}
+	}
     return (0);
 }
 

@@ -59,15 +59,23 @@ void	Server::trim_whiteSpaces(string &str)
 		str = str.substr(0, end - 1);
 }
 
-string	Server::check_nick_presence(string nick_toFind)
+string	Server::check_nick_presence(string nick_toFind)//if client found return empty string
 {
 	for (size_t i = 0; i < this->clients.size(); i++)
 		if (nick_toFind == this->clients[i]->nick)
 			return "";
 	return nick_toFind;
 }
+string	Server::check_channel_presence(string channel_toFind)//if channel found return empty string
+{
+	std::map<string, Channel *>::iterator it = channels.begin();
+	for (; it != channels.end(); it++)
+		if (channel_toFind == it->first)
+			return "";
+	return channel_toFind;
+}
 
-string	Server::check_nickNAMEs(std::vector<string> &cls)
+string	Server::check_nickNAMEs(std::vector<string> &cls) //client / channel vector
 {
 	std::sort(cls.begin(), cls.end());
 	std::vector<string>::iterator it = std::unique(cls.begin(), cls.end());
@@ -77,6 +85,22 @@ string	Server::check_nickNAMEs(std::vector<string> &cls)
 	for (size_t i = 0; i < cls.size(); i++)
 	{
 		unfound = check_nick_presence(cls[i]);
+		if (unfound != "")
+			return (ERR_NOSUCHNICK(unfound));
+	}
+	return ("");
+}
+
+string	Server::check_channNAMEs(std::vector<string> &cls) //client / channel vector
+{
+	std::sort(cls.begin(), cls.end());
+	std::vector<string>::iterator it = std::unique(cls.begin(), cls.end());
+	if (it != cls.end())
+		return (ERR_TOOMANYTARGETS(*it));
+	string unfound;
+	for (size_t i = 0; i < cls.size(); i++)
+	{
+		unfound = check_channel_presence(cls[i]);
 		if (unfound != "")
 			return (ERR_NOSUCHNICK(unfound));
 	}
