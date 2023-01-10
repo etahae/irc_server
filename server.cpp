@@ -22,7 +22,7 @@ void    Server::split(char *str, string &cmd, string &res)
 			res = arg.substr(pos, end_pos - pos + 1);
 		else if (pos != string::npos && end_pos == string::npos)
 			res = arg.substr(pos, arg.size() - pos + 1);
-		else		//(pos == end_pos)
+		else
 			res = "";
 	}
 }

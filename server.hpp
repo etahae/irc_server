@@ -43,9 +43,7 @@ namespace irc
 			std::map<string, Channel *> channels;
 
 			~Server()
-			{
-				// clients.clear();
-			}
+			{}
 
 			int fatal_error(std::string msg)
 			{
@@ -58,6 +56,7 @@ namespace irc
 				this->password = argv[2];
 				this->port_number = std::atoi(argv[1]);
 				this->_socket = socket(AF_INET, SOCK_STREAM, 0);
+									//  IPV4,   TCP ,     tcp default
 				if (this->_socket < 0)
 					return (this->fatal_error("socket failure"));
 				bzero((char *) &this->server_addr, sizeof(this->server_addr));

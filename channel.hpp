@@ -54,7 +54,6 @@ namespace irc
 				for (std::map<string, Client*>::iterator it = members.begin(); it != members.end(); it++)
 				{
 					string msg = " : " +cl->nick + " joined " + this->ch_name;
-					// send_err(it->second, msg);
 					send_err(it->second, ":" + cl->nick + " PRIVMSG " + it->first + msg);
 				}
 			}

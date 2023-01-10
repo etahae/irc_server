@@ -155,7 +155,7 @@ void	Server::_JOIN(string s_token, Client * client, string chann)
 		{
 			chns = chann.substr(0, i);
 			keys = chann.substr(i, chann.size() - i);
-			str = strtok(const_cast<char *>(chns.c_str()), ",");
+			str = strtok(const_cast<char *>(chns.c_str()), ",");//split channels with commas
 			while (str != NULL)
 			{
 				string tmp = str;
@@ -163,7 +163,7 @@ void	Server::_JOIN(string s_token, Client * client, string chann)
 				v_channels.push_back(tmp);
 				str = strtok(NULL, ",");
 			}
-			str = strtok(const_cast<char *>(keys.c_str()), ",");
+			str = strtok(const_cast<char *>(keys.c_str()), ",");//split keys with commas
 			while (str != NULL)
 			{
 				string tmp = str;
@@ -171,7 +171,7 @@ void	Server::_JOIN(string s_token, Client * client, string chann)
 				v_keys.push_back(tmp);
 				str = strtok(NULL, ",");
 			}
-			if (v_keys.size() != v_channels.size())
+			if (v_keys.size() != v_channels.size())	//check that the same amount of channels and keys
 			{
 				send_msg(client, ERR_NEEDMOREPARAMS("JOIN_"));
 				return ;
@@ -184,7 +184,7 @@ void	Server::_JOIN(string s_token, Client * client, string chann)
 			}
 		}
 		else
-			send_msg(client, ERR_NEEDMOREPARAMS("_JOIN"));
+			send_msg(client, ERR_NEEDMOREPARAMS("_JOIN"));	//in case of JOIN failed
 	}
 }
 

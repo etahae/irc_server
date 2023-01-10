@@ -29,7 +29,6 @@ namespace irc
 			struct	sockaddr_in sock_addr;
 			bool	verified;
 			// std::vector<Channel *> channels;
-			//vector channel
 
 			//constructors
 			Client():verified(false) {}
