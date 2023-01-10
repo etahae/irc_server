@@ -68,7 +68,8 @@ void connect(Server &server, char *buffer, int i, size_t index)
 					":Rαɠɳαɾöƙ 002 " + server.clients[index]->nick + " :Your host is Rαɠɳαɾöƙ, running version 1.0\r\n"
 					":Rαɠɳαɾöƙ 003 " + server.clients[index]->nick + " :This server was created 28/12/2022\r\n"
 					":Rαɠɳαɾöƙ 004 " + server.clients[index]->nick + " Rαɠɳαɾöƙ 1.0 - -\r\n"
-					":Rαɠɳαɾöƙ 372 " + server.clients[index]->nick + " 🔨 𝔚𝔢𝔩𝔠𝔬𝔪𝔢 𝔗𝔬 Rαɠɳαɾöƙ 🔨\r\n";
+					":Rαɠɳαɾöƙ 372 " + server.clients[index]->nick + " 🔨 𝔚𝔢𝔩𝔠𝔬𝔪𝔢 𝔗𝔬 Rαɠɳαɾöƙ 🔨\r\n"
+					":Rαɠɳαɾöƙ 376 " + server.clients[index]->nick + " :End of /MOTD command\r\n";
 					write(server.clients[index]->fd_socket, rpl.c_str(), rpl.size());
 					server.clients[index]->verified = true;
 					cout << CONNECTED << server.clients[index]->nick << " Connected" << endl;
