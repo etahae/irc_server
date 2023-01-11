@@ -80,8 +80,8 @@ void connect(Server &server, char *buffer, int i, size_t index)
 			server.customer_service(const_cast<char *>(str_buffer.c_str()), server.clients[index], i, index);
 		str_buffer = "";
 	}
-	if (server.clients[index]->verified == true)
-		write(server.clients[index]->fd_socket, VERIFIED, strlen(VERIFIED));
+	// if (server.clients[index]->verified == true)
+	// 	write(server.clients[index]->fd_socket, VERIFIED, strlen(VERIFIED));
 }
 
 int main(int argc, char **argv)

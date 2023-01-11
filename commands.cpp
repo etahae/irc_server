@@ -42,7 +42,8 @@ void	Server::_USER(string s_token, Client * client, string user)
             send_msg(client, ERR_NEEDMOREPARAMS("USER"));
             return ;
         }
-        client->username = user;
+        int i = user.find(' ');
+        client->username = user.substr(0, i);
     }
 }
 
@@ -138,7 +139,9 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
 				std::map<string, Channel *>::iterator target_chan = this->channels.find(cls[i]);
 				for (std::map<string, Client *>::iterator it = target_chan->second->members.begin(); it != target_chan->second->members.end(); it++)
 					if (it->first != client->nick)
-            			send_msg(it->second, ":" + it->first + " PRIVMSG " + cls[i] + sms);
+                    {
+            			send_msg(it->second, ":" + client->nick + " PRIVMSG " + cls[i] + sms);
+                    }
 			}
 		}
 	}

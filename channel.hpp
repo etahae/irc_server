@@ -27,6 +27,18 @@ namespace irc
 			Channel():ch_name(""),passwd(""),max_numbers(9999) {}
 			Channel(string name, string pass):ch_name(name),passwd(pass),max_numbers(9999) {}
 			
+			string names_list()
+			{
+				string list = "";
+				for (std::map<string, Client *>::iterator it = members.begin(); it != members.end(); it++)
+					if (operators.find(it->first) == operators.end())
+						list += it->first + " ";
+				for (std::map<string, Client *>::iterator it = operators.begin(); it != operators.end(); it++)
+					list += "@" + it->first + " ";
+				list.erase(list.begin() + list.size() - 1);
+				return list;
+			}
+
 			void	joinChannel(string name, const string &pass, Client *cl)
 			{
 				string err = "";
@@ -40,22 +52,42 @@ namespace irc
 					err = "475 * " + this->ch_name + " :Cannot join channel (+k)";
 				else if (this->members.find(cl->nick) != this->members.end())
 					err = "443 * " + cl->nick + " " + ch_name + " :is already on channel";
+				else if (this->members.size() == 0)
+				{
+					operators.insert(std::pair<string,Client *> (cl->nick, cl));
+					members.insert(std::pair<string,Client *> (cl->nick, cl));
+					//send message to irc clients to verify that they joined the channel
+					string msg = ":" + cl->user_info() + " JOIN " + this->ch_name + "\r\n"
+					":Rαɠɳαɾöƙ MODE " + this->ch_name + " +nt\r\n"
+					":Rαɠɳαɾöƙ 353 " + cl->nick + " = " + this->ch_name + " :@" + cl->nick + "\r\n"
+					":Rαɠɳαɾöƙ 366 " + cl->nick + " " + this->ch_name + " :End of /NAMES list.";
+                    send_err(cl, msg);
+				}
 				else
 				{
-					if(this->operators.size() == 0)
-						operators.insert(std::pair<string,Client *> (cl->nick, cl));
 					members.insert(std::pair<string,Client *> (cl->nick, cl));
+					string msg = ":" + cl->user_info() + " JOIN " + this->ch_name + "\r\n"
+					":Rαɠɳαɾöƙ 332 " + cl->nick + " " + this->ch_name + " :This is my cool channel!  https://irc.com\r\n"
+					":Rαɠɳαɾöƙ 333 " + cl->nick + " " + this->ch_name + " " + operators.begin()->second->user_info() + " 1547691506\r\n"
+					":Rαɠɳαɾöƙ 353 " + cl->nick + " @ " + this->ch_name + " :" + names_list() + "\r\n"
+					":Rαɠɳαɾöƙ 366 " + cl->nick + " " + this->ch_name + " :End of /NAMES list.";
+                    send_err(cl, msg);
+					cout << "*" << names_list() << "*" << endl;
 				}
 				if (err != "")
 				{
 					send_err(cl, err);
 					return ;
 				}
-				for (std::map<string, Client*>::iterator it = members.begin(); it != members.end(); it++)
-				{
-					string msg = " : " +cl->nick + " joined " + this->ch_name;
-					send_err(it->second, ":" + cl->nick + " PRIVMSG " + it->first + msg);
-				}
+				// for (std::map<string, Client*>::iterator it = members.begin(); it != members.end(); it++)
+				// {
+                    // msg = "366 * RPL_ENDOFNAMES:" + ch_name + " :End of /NAMES list";
+                    // send_err(cl, msg);
+					// msg = "367 * RPL_BANLIST:" + ch_name;
+                    // send_err(cl, msg);
+					// msg = "368 * RPL_ENDOFBANLIST:" + ch_name + " :End of channel ban list";
+                    // send_err(cl, msg);
+				// }
 			}
 			int	validateChannelName(const string &str)
 			{
