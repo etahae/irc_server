@@ -162,7 +162,10 @@ void	Server::_JOIN(string s_token, Client * client, string chann)
 	std::vector<string> v_channels;
 	std::vector<string> v_keys;
 	if (s_token == "JOIN\r\n" || s_token == "JOIN\n" || (s_token == "JOIN" && chann == ""))
+	{
 		send_msg(client, ERR_NEEDMOREPARAMS("JOIN"));
+		return ;
+	}
 	else if (s_token == "JOIN")
 	{
 		int i = find_spaceInBetween(chann);
@@ -200,6 +203,51 @@ void	Server::_JOIN(string s_token, Client * client, string chann)
 		}
 		else
 			send_msg(client, ERR_NEEDMOREPARAMS("_JOIN"));	//in case of JOIN failed
+	}
+}
+
+void 	Server::_PART(string s_token, Client * client, string channs)
+{
+	if (s_token == "PART\r\n" || s_token == "PART\n" || (s_token == "PART" && channs == ""))
+	{
+		send_msg(client, ERR_NEEDMOREPARAMS("PART"));
+		return ;
+	}
+	else if (s_token == "PART")
+	{
+		char *str = strtok(const_cast<char *>(channs.c_str()), ",");//split channels with commas
+		string tmp = str;
+		while (str != NULL)
+		{
+			tmp = str;
+			Server::trim_whiteSpaces(tmp);
+			this->leave_channels(client, tmp);
+			str = strtok(NULL, ",");
+		}
+	}
+}
+
+void	Server::leave_channels(Client * client, string channel)
+{
+	std::map<string, Channel*>::iterator it;
+	int	status;
+	it = this->channels.find(channel);
+	if (it == this->channels.end())
+	{
+		string dup = "403 * " + channel + " :No such channel";
+		send_msg(client, dup);
+	}
+	else
+	{
+		status = it->second->members.erase(client->nick);
+		it->second->operators.erase(client->nick);
+		if (status == 0)
+		{
+			string dup = "442 * " + channel + " :You're not on that channel";
+			send_msg(client, dup);
+		}
+		if (it->second->members.size() == 0) //erase channel when no member left in it
+			this->channels.erase(it);
 	}
 }
 

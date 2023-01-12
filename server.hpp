@@ -111,7 +111,7 @@ namespace irc
 				s_token = token;
 				if (s_token == "NICK" || s_token == "USER" || s_token == "PASS"
 					|| s_token == "NOTICE" || s_token == "PRIVMSG" || s_token == "QUIT"
-					|| s_token== "JOIN")
+					|| s_token== "JOIN" || s_token == "PART")
 					split(cmd, s_token, res);
 				this->_NICK(s_token, client, res);
 				this->_USER(s_token, client, res);
@@ -119,6 +119,7 @@ namespace irc
 				this->_NOTICE(s_token, client, res);
 				this->_PRIVMSG(s_token, client, res);
 				this->_JOIN(s_token, client, res);
+				this->_PART(s_token, client, res);
 				this->_QUIT(s_token, client, i, index);
 				return 0;
 			}
@@ -151,6 +152,7 @@ namespace irc
 			void	_PASS(string s_token, Client * client, string pass);
 			void	_NOTICE(string s_token, Client * client, string pass);
 			int 	_PRIVMSG(string s_token, Client * client, string msg);
+			void 	_PART(string s_token, Client * client, string channs);
 			void	_QUIT(string s_token, Client * client, int i, size_t index);
 			void    split(char * str, string & cmd, string & res);
 			size_t	params_calc(string params);
@@ -160,7 +162,7 @@ namespace irc
 			string	check_nick_presence(string nick_toFind);
 			string	check_channel_presence(string channel_toFind);
 			string	check_channNAMEs(std::vector<string> &cls);
-
+			void	leave_channels(Client * client, string channel);
 			//ERROR THAT CAN'T BE DEFINED AS MACROS
 			string	ERR_TOOMANYTARGETS(string target)
 				{ return ("407 * " + target + " :Duplicate recipients.");}
