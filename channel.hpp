@@ -44,6 +44,8 @@ namespace irc
 				string err = "";
 				(void)name;
 				//check no pass or name given
+				if (!validateChannelName(name))
+					return ;
 				if(bans.find(cl->nick) != bans.end())	//ban member
 					err = "474 * " + this->ch_name + " :Cannot join channel (+b)";
 				else if (members.size() >= max_numbers)	//channel reach it's max member
@@ -72,7 +74,6 @@ namespace irc
 					":Rαɠɳαɾöƙ 353 " + cl->nick + " @ " + this->ch_name + " :" + names_list() + "\r\n"
 					":Rαɠɳαɾöƙ 366 " + cl->nick + " " + this->ch_name + " :End of /NAMES list.";
                     send_err(cl, msg);
-					cout << "*" << names_list() << "*" << endl;
 				}
 				if (err != "")
 				{
@@ -94,7 +95,6 @@ namespace irc
 				string channelRegex = "ABCDEFGHIKLMNOPQRSTVXYZabcdefghijklmnopqrstuvwxyz\r\n";
 				
 				int position = str.find_last_not_of(channelRegex);
-				cout << position << endl;
 				if (position == 0)
 					if (str[0] == '&' || str[0] == '#')
 						return 1;
