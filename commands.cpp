@@ -220,12 +220,31 @@ void 	Server::_PART(string s_token, Client * client, string channs)
 		while (str != NULL)
 		{
 			tmp = str;
-			size_t pos = tmp.find(':');
+			size_t pos = tmp.find(':'); // revolution irc ':' requirement removal
 			if (pos != string::npos)
 				tmp.erase(pos);
 			Server::trim_whiteSpaces(tmp);
 			this->leave_channels(client, tmp);
 			str = strtok(NULL, ",");
 		}
+	}
+}
+
+void 	Server::_MODE(string s_token, Client * client, string params)
+{
+	if (s_token == "MODE\r\n" || s_token == "MODE\n" || (s_token == "MODE" && params == ""))
+	{
+		send_msg(client, ERR_NEEDMOREPARAMS("MODE"));
+		return ;
+	}
+	else if (s_token == "MODE")
+	{
+		cout << "****" << endl;
+		string part_param = string(strtok(const_cast<char *>(params.c_str()), " "));
+		cout << part_param << endl;
+		part_param = string(strtok(NULL, " "));
+		cout << part_param << endl;
+		part_param = string(strtok(NULL, " "));
+		cout << part_param << endl;
 	}
 }

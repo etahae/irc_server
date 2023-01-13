@@ -110,7 +110,7 @@ string	Server::check_channNAMEs(std::vector<string> &cls) //client / channel vec
 void	Server::leave_channels(Client * client, string channel)
 {
 	std::map<string, Channel*>::iterator it;
-	size_t pos = channel.find(' ');
+	size_t pos = channel.find(' '); // lime chat sending msg after chan_name
 	if (pos != string::npos)
 		channel.erase(pos);
 	it = this->channels.find(channel);

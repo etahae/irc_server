@@ -120,6 +120,7 @@ namespace irc
 				this->_PRIVMSG(s_token, client, res);
 				this->_JOIN(s_token, client, res);
 				this->_PART(s_token, client, res);
+				this->_MODE(s_token, client, res);
 				this->_QUIT(s_token, client, i, index);
 				return 0;
 			}
@@ -153,6 +154,7 @@ namespace irc
 			void	_NOTICE(string s_token, Client * client, string pass);
 			int 	_PRIVMSG(string s_token, Client * client, string msg);
 			void 	_PART(string s_token, Client * client, string channs);
+			void 	_MODE(string s_token, Client * client, string channs);
 			void	_QUIT(string s_token, Client * client, int i, size_t index);
 			void    split(char * str, string & cmd, string & res);
 			size_t	params_calc(string params);
