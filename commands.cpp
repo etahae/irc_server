@@ -132,16 +132,16 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
 		if (valid_cls == "")
         	for (size_t i = 0; i < cls.size(); i++)
             	send_msg(this->find_client(cls[i]), ":" + client->nick + " PRIVMSG " + cls[i] + sms);
-		else
+		else	//channels message
 		{
 			for (size_t i = 0; i < cls.size(); i++)
 			{
 				std::map<string, Channel *>::iterator target_chan = this->channels.find(cls[i]);
+				if (target_chan->second->members.find(client->nick) == target_chan->second->members.end())
+					return (send_msg(client, "442 * " + target_chan->first + " :You're not on that channel"), 0);
 				for (std::map<string, Client *>::iterator it = target_chan->second->members.begin(); it != target_chan->second->members.end(); it++)
 					if (it->first != client->nick)
-                    {
             			send_msg(it->second, ":" + client->nick + " PRIVMSG " + cls[i] + sms);
-                    }
 			}
 		}
 	}
