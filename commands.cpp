@@ -3,7 +3,7 @@
 #include <algorithm>
 
 using namespace irc;
-int	find_spaceInBetween(string str);
+
 void	Server::_NICK(string s_token, Client * client, string nick)
 {
     int n = 0;
@@ -220,60 +220,12 @@ void 	Server::_PART(string s_token, Client * client, string channs)
 		while (str != NULL)
 		{
 			tmp = str;
+			size_t pos = tmp.find(':');
+			if (pos != string::npos)
+				tmp.erase(pos);
 			Server::trim_whiteSpaces(tmp);
 			this->leave_channels(client, tmp);
 			str = strtok(NULL, ",");
 		}
 	}
-}
-
-void	Server::leave_channels(Client * client, string channel)
-{
-	std::map<string, Channel*>::iterator it;
-	int	status;
-	it = this->channels.find(channel);
-	if (it == this->channels.end())
-	{
-		string dup = "403 * " + channel + " :No such channel";
-		send_msg(client, dup);
-	}
-	else
-	{
-		status = it->second->members.erase(client->nick);
-		it->second->operators.erase(client->nick);
-		if (status == 0)
-		{
-			string dup = "442 * " + channel + " :You're not on that channel";
-			send_msg(client, dup);
-		}
-		else
-		{
-			for (std::map<string, Client*>::iterator i = it->second->members.begin(); i != it->second->members.end(); i++)
-			{
-				string msg = ":" + client->user_info() + " PART " + channel + "\r\n";
-				send_msg(i->second, msg);
-			}
-		}
-		if (it->second->members.size() == 0) //erase channel when no member left in it
-			this->channels.erase(it);
-	}
-}
-
-int	find_spaceInBetween(string str)
-{
-	for (size_t i = 1; i < str.size(); i++)
-	{
-		if (str[i] == ' ' && isalnum(str[i - 1]))
-		{
-			for (size_t j = i; j < str.size(); j++)
-			{
-				i = j;
-				if (str[j] != ' ')
-					break ;
-			}
-			if (isalnum(str[i]))
-				return (i - 1);
-		}
-	}
-	return 0;
 }

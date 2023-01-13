@@ -163,6 +163,8 @@ namespace irc
 			string	check_channel_presence(string channel_toFind);
 			string	check_channNAMEs(std::vector<string> &cls);
 			void	leave_channels(Client * client, string channel);
+			int		find_spaceInBetween(string str);
+
 			//ERROR THAT CAN'T BE DEFINED AS MACROS
 			string	ERR_TOOMANYTARGETS(string target)
 				{ return ("407 * " + target + " :Duplicate recipients.");}

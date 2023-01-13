@@ -106,3 +106,57 @@ string	Server::check_channNAMEs(std::vector<string> &cls) //client / channel vec
 	}
 	return ("");
 }
+
+void	Server::leave_channels(Client * client, string channel)
+{
+	std::map<string, Channel*>::iterator it;
+	size_t pos = channel.find(' ');
+	if (pos != string::npos)
+		channel.erase(pos);
+	it = this->channels.find(channel);
+	if (it == this->channels.end())
+	{
+		string dup = "403 * " + channel + " :No such channel";
+		send_msg(client, dup);
+	}
+	else
+	{
+		std::map<string, Client*>::iterator _it = it->second->members.find(client->nick);
+		if (_it == it->second->members.end())
+		{
+			string dup = "442 * " + channel + " :You're not on that channel";
+			send_msg(client, dup);
+		}
+		else
+		{
+			for (std::map<string, Client*>::iterator i = it->second->members.begin(); i != it->second->members.end(); i++)
+			{
+				string msg = ":" + client->user_info() + " PART " + channel + "\r\n";
+				send_msg(i->second, msg);
+			}
+			it->second->members.erase(client->nick);
+			it->second->operators.erase(client->nick);
+		}
+		if (it->second->members.size() == 0) //erase channel when no member left in it
+			this->channels.erase(it);
+	}
+}
+
+int	Server::find_spaceInBetween(string str)
+{
+	for (size_t i = 1; i < str.size(); i++)
+	{
+		if (str[i] == ' ' && isalnum(str[i - 1]))
+		{
+			for (size_t j = i; j < str.size(); j++)
+			{
+				i = j;
+				if (str[j] != ' ')
+					break ;
+			}
+			if (isalnum(str[i]))
+				return (i - 1);
+		}
+	}
+	return 0;
+}
