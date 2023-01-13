@@ -246,6 +246,14 @@ void	Server::leave_channels(Client * client, string channel)
 			string dup = "442 * " + channel + " :You're not on that channel";
 			send_msg(client, dup);
 		}
+		else
+		{
+			for (std::map<string, Client*>::iterator i = it->second->members.begin(); i != it->second->members.end(); i++)
+			{
+				string msg = ":" + client->user_info() + " PART " + channel + "\r\n";
+				send_msg(i->second, msg);
+			}
+		}
 		if (it->second->members.size() == 0) //erase channel when no member left in it
 			this->channels.erase(it);
 	}

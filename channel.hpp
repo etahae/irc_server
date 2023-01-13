@@ -16,9 +16,6 @@ namespace irc
 			string	passwd;
 			size_t	max_numbers;
 			string	modes; //oip...
-			// std::vector<Client *> operators;
-			// std::vector<Client *> members;
-			// std::vector<Client *> bans;
 
 			std::map<string, Client *> members;
 			std::map<string, Client *> bans;
@@ -73,22 +70,19 @@ namespace irc
 					":Rαɠɳαɾöƙ 333 " + cl->nick + " " + this->ch_name + " " + operators.begin()->second->user_info() + " 1547691506\r\n"
 					":Rαɠɳαɾöƙ 353 " + cl->nick + " @ " + this->ch_name + " :" + names_list() + "\r\n"
 					":Rαɠɳαɾöƙ 366 " + cl->nick + " " + this->ch_name + " :End of /NAMES list.";
+					cout << names_list() << endl;
                     send_err(cl, msg);
+					for (std::map<string, Client*>::iterator it = members.begin(); it != members.end(); it++)
+					{
+						msg = ":" + cl->user_info() + " JOIN " + this->ch_name + "\r\n";
+                    	send_err(it->second, msg);
+					}
 				}
 				if (err != "")
 				{
 					send_err(cl, err);
 					return ;
 				}
-				// for (std::map<string, Client*>::iterator it = members.begin(); it != members.end(); it++)
-				// {
-                    // msg = "366 * RPL_ENDOFNAMES:" + ch_name + " :End of /NAMES list";
-                    // send_err(cl, msg);
-					// msg = "367 * RPL_BANLIST:" + ch_name;
-                    // send_err(cl, msg);
-					// msg = "368 * RPL_ENDOFBANLIST:" + ch_name + " :End of channel ban list";
-                    // send_err(cl, msg);
-				// }
 			}
 			int	validateChannelName(const string &str)
 			{
