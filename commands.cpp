@@ -230,6 +230,62 @@ void 	Server::_PART(string s_token, Client * client, string channs)
 	}
 }
 
+void 	Server::_KICK(string s_token, Client * client, string res)
+{
+	if (s_token == "KICK\r\n" || s_token == "KICK\n" || (s_token == "KICK" && res == ""))
+	{
+		send_msg(client, ERR_NEEDMOREPARAMS("KICK"));
+		return ;
+	}
+	else if (s_token == "KICK")
+	{
+		string chns;
+		string users;
+		char*	str;
+		std::vector<string> v_channels;
+		std::vector<string> v_users;
+		int i = find_spaceInBetween(res);
+		if (i)
+		{
+			chns = res.substr(0, i);
+			users = res.substr(i, res.size() - i);
+			str = strtok(const_cast<char *>(chns.c_str()), ",");//split channels with commas
+			std::map<string, Channel *>::iterator it;
+
+			while (str != NULL)
+			{
+				string tmp = str;
+				Server::trim_whiteSpaces(tmp);
+				v_channels.push_back(tmp);
+				str = strtok(NULL, ",");
+			}
+			str = strtok(const_cast<char *>(users.c_str()), ",");//split keys with commas
+			while (str != NULL)
+			{
+				string tmp = str;
+				Server::trim_whiteSpaces(tmp);
+				v_users.push_back(tmp);
+				str = strtok(NULL, ",");
+			}
+			if (v_channels.size() != v_users.size())
+			{
+				send_msg(client, ERR_NEEDMOREPARAMS("KICK"));
+				return ;
+			}
+			for (size_t i = 0; i < v_channels.size(); i++)
+			{
+				it = this->channels.find(v_channels[i]);
+				if (it == this->channels.end() || this->channels.size() == 0)
+					send_msg(client, "403 * " + v_channels[i] + " :No such channel");
+				else if (it->second->operators.find(client->nick) == it->second->operators.end())
+					send_msg(client, "482 * " + it->first + " :You're not channel operator");
+				else
+					this->_PART("PART", it->second->members.find(v_users[i])->second, v_channels[i]);
+			}
+		}
+	}
+}
+
 void 	Server::_MODE(string s_token, Client * client, string params)
 {
 	if (s_token == "MODE\r\n" || s_token == "MODE\n" || (s_token == "MODE" && params == ""))
