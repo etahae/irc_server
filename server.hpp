@@ -111,7 +111,8 @@ namespace irc
 				s_token = token;
 				if (s_token == "NICK" || s_token == "USER" || s_token == "PASS"
 					|| s_token == "NOTICE" || s_token == "PRIVMSG" || s_token == "QUIT"
-					|| s_token== "JOIN" || s_token == "PART" || s_token == "KICK")
+					|| s_token == "JOIN" || s_token == "PART" || s_token == "KICK"
+					|| s_token == "INVITE")
 					split(cmd, s_token, res);
 				this->_NICK(s_token, client, res);
 				this->_USER(s_token, client, res);
@@ -122,6 +123,7 @@ namespace irc
 				this->_PART(s_token, client, res);
 				this->_MODE(s_token, client, res);
 				this->_KICK(s_token, client, res);
+				this->_INVITE(s_token, client, res);
 				this->_QUIT(s_token, client, i, index);
 				return 0;
 			}
@@ -158,6 +160,7 @@ namespace irc
 			void 	_MODE(string s_token, Client * client, string channs);
 			void 	_KICK(string s_token, Client * client, string res);
 			void	_QUIT(string s_token, Client * client, int i, size_t index);
+			int 	_INVITE(string s_token, Client * client, string invited);
 			void    split(char * str, string & cmd, string & res);
 			size_t	params_calc(string params);
 			Client *find_client(string nick);

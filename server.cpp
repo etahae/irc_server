@@ -15,7 +15,7 @@ void    Server::split(char *str, string &cmd, string &res)
 	arg = rest;     //the whole command after removing NICK, ...
 	if (cmd == "NICK" || cmd == "PASS" || cmd == "USER" || cmd == "NOTICE"
 		|| cmd == "PRIVMSG" || cmd == "QUIT" || cmd == "JOIN" || cmd == "PART"
-		|| cmd == "KICK")
+		|| cmd == "KICK" || cmd == "INVITE")
 	{
 		pos = arg.find_first_not_of(" : \r\n");
 		end_pos = arg.find_last_not_of(" \t\f\v\n\r");

@@ -304,3 +304,29 @@ void 	Server::_MODE(string s_token, Client * client, string params)
 		cout << part_param << endl;
 	}
 }
+
+int 	Server::_INVITE(string s_token, Client * client, string invited)
+{
+	if (s_token == "INVITE\r\n" || s_token == "INVITE\n" || (s_token == "INVITE" && invited == ""))
+		return (send_msg(client, ERR_NEEDMOREPARAMS("INVITE")), 0);
+	else if (s_token == "INVITE")
+	{
+		string nickname = string(strtok(const_cast<char *>(invited.c_str()), " "));
+		string channel = string(strtok(NULL, " "));
+		bool founded = false;
+		size_t i = 0;
+		for (; i < this->clients.size(); i++)
+		{
+			if (nickname == this->clients[i]->nick)
+			{
+				founded = true;
+				break ;
+			}
+		}
+		if (founded == false)	//no such client
+			return (send_msg(client, "401 * " + nickname + " :No such nick"), 0);
+		if (this->channels.find(channel) == this->channels.end())
+			return (send_msg(client, "403 * " + channel + " :No such channel"), 0);
+	}
+	return 0;
+}

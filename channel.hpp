@@ -17,9 +17,10 @@ namespace irc
 			size_t	max_numbers;
 			string	modes; //oip...
 
-			std::map<string, Client *> members;
-			std::map<string, Client *> bans;
-			std::map<string, Client *> operators;
+			std::map<string, Client *>	members;
+			std::map<string, Client *>	bans;
+			std::map<string, Client *>	operators;
+			std::map<string, int> 		invited_clients;	 
 
 			Channel():ch_name(""),passwd(""),max_numbers(9999) {}
 			Channel(string name, string pass):ch_name(name),passwd(pass),max_numbers(9999) {}
