@@ -313,8 +313,15 @@ int 	Server::_INVITE(string s_token, Client * client, string invited)
 		return (send_msg(client, ERR_NEEDMOREPARAMS("INVITE")), 0);
 	else if (s_token == "INVITE")
 	{
-		string nickname = string(strtok(const_cast<char *>(invited.c_str()), " "));
-		string channel = string(strtok(NULL, " "));
+		char *nick, *chan;
+		string nickname;
+		string channel;
+		nick = strtok(const_cast<char *>(invited.c_str()), " ");
+		chan = strtok(NULL, " ");
+		if (!nick || !chan)
+			return (send_msg(client, ERR_NEEDMOREPARAMS("_INVITE")), 0);
+		nickname = nick;
+		channel = chan;
 		bool founded = false;
 		size_t i = 0;
 		for (; i < this->clients.size(); i++)
@@ -330,8 +337,14 @@ int 	Server::_INVITE(string s_token, Client * client, string invited)
 		map_iter = this->channels.find(channel);
 		if (map_iter == this->channels.end())
 			return (send_msg(client, "403 * " + channel + " :No such channel"), 0);
+		if (map_iter->second->operators.find(client->nick) == map_iter->second->operators.end())
+			return (send_msg(client, "482 * " + channel + " :You're not channel operator"), 0);
 		if (map_iter->second->members.find(this->clients[i]->nick) != map_iter->second->members.end())
 			return (send_msg(client, "443 * " + this->clients[i]->nick + " " + channel + " :is already on channel"), 0);
+		for (std::map<string, Client *>::iterator it = map_iter->second->members.begin(); it != map_iter->second->members.end(); it++)
+			send_msg(it->second, "341 * " + channel + " " + nickname + "");
+		send_msg(clients[i], "341 * " + clients[i]->nick + " " + channel);
+		map_iter->second->invited_clients.insert(std::pair<string, int> (nickname, 1));
 	}
 	return 0;
 }
