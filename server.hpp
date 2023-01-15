@@ -78,6 +78,8 @@ namespace irc
 				if (client->verified)
 					return 1;
 				char *token = strdup(cmd);
+				if (token == NULL)
+					return 0;
 				string s_token;	//NICK, USER, PASS
 				string res;		//sentence after NICK, USER, PASS
 
@@ -94,6 +96,7 @@ namespace irc
 				this->_USER(s_token, client, res);
 				this->_PASS(s_token, client, res);
 				this->_QUIT(s_token, client, i, index);
+				free(token);
 				if (client->nick != "" && client->username != "" && client->pass == this->password)
 					return 1;
 				return 0;
@@ -104,6 +107,8 @@ namespace irc
 				if (!cmd || *cmd == 0)
 					return 0;
 				char *token = strdup(cmd);
+				if (token == NULL)
+					return 0;
 				string s_token;	//NICK, USER, PASS
 				string res;		//sentence after NICK, USER, PASS
 
@@ -125,6 +130,7 @@ namespace irc
 				this->_KICK(s_token, client, res);
 				this->_INVITE(s_token, client, res);
 				this->_QUIT(s_token, client, i, index);
+				free(token);
 				return 0;
 			}
 

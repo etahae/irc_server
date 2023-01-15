@@ -74,6 +74,8 @@ void    Server::_NOTICE(string s_token, Client * client, string msg)
     else if (s_token == "NOTICE")
     {
         char * msg_token = strdup(const_cast<char *> (msg.c_str()));
+		if (msg_token == NULL)
+			return;
         char * nick_name = strtok_r(msg_token, " ",
             &msg_token);
         if (msg_token && nick_name)
@@ -85,6 +87,7 @@ void    Server::_NOTICE(string s_token, Client * client, string msg)
                 send_msg(receiver, letter);
             }
         }
+		free(msg_token);
     }
 }
 

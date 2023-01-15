@@ -5,8 +5,9 @@ using namespace irc;
 void    Server::split(char *str, string &cmd, string &res)
 {
 	char* token;
-	char* rest = NULL;
-	rest = strdup(str);
+	char* rest = strdup(str);
+	if (rest == NULL)
+		return;
 	string arg = "";
 	unsigned long pos = 0, end_pos = 0;
 
@@ -26,6 +27,7 @@ void    Server::split(char *str, string &cmd, string &res)
 		else
 			res = "";
 	}
+	free(token);
 }
 
 size_t  Server::params_calc(string params)
