@@ -159,11 +159,6 @@ void    Server::_QUIT(string s_token, Client * client, int i, size_t index)
 
 void	Server::_JOIN(string s_token, Client * client, string chann)
 {
-	string chns;
-	string keys;
-	char*	str;
-	std::vector<string> v_channels;
-	std::vector<string> v_keys;
 	if (s_token == "JOIN\r\n" || s_token == "JOIN\n" || (s_token == "JOIN" && chann == ""))
 	{
 		send_msg(client, ERR_NEEDMOREPARAMS("JOIN"));
@@ -171,6 +166,12 @@ void	Server::_JOIN(string s_token, Client * client, string chann)
 	}
 	else if (s_token == "JOIN")
 	{
+		string chns;
+		string keys;
+		char*	str;
+		std::vector<string> v_channels;
+		std::vector<string> v_keys;
+
 		int i = find_spaceInBetween(chann);
 		if (i)
 		{
@@ -194,7 +195,7 @@ void	Server::_JOIN(string s_token, Client * client, string chann)
 			}
 			if (v_keys.size() != v_channels.size())	//check that the same amount of channels and keys
 			{
-				send_msg(client, ERR_NEEDMOREPARAMS("JOIN_"));
+				send_msg(client, ERR_NEEDMOREPARAMS("JOIN"));
 				return ;
 			}
 			for (size_t i = 0; i < v_keys.size(); i++)
@@ -205,7 +206,7 @@ void	Server::_JOIN(string s_token, Client * client, string chann)
 			}
 		}
 		else
-			send_msg(client, ERR_NEEDMOREPARAMS("_JOIN"));	//in case of JOIN failed
+			send_msg(client, ERR_NEEDMOREPARAMS("JOIN"));	//in case of JOIN failed
 	}
 }
 
@@ -289,23 +290,30 @@ void 	Server::_KICK(string s_token, Client * client, string res)
 	}
 }
 
-void 	Server::_MODE(string s_token, Client * client, string params)
+int 	Server::_MODE(string s_token, Client * client, string params)
 {
 	if (s_token == "MODE\r\n" || s_token == "MODE\n" || (s_token == "MODE" && params == ""))
-	{
 		send_msg(client, ERR_NEEDMOREPARAMS("MODE"));
-		return ;
-	}
 	else if (s_token == "MODE")
 	{
-		cout << "****" << endl;
-		string part_param = string(strtok(const_cast<char *>(params.c_str()), " "));
-		cout << part_param << endl;
-		part_param = string(strtok(NULL, " "));
-		cout << part_param << endl;
-		part_param = string(strtok(NULL, " "));
-		cout << part_param << endl;
+		size_t params_nbr = params_calc(params);
+		if (params_nbr < 2)
+			return (send_msg(client, ERR_NEEDMOREPARAMS("1MODE")), 1);
+		char* part_param = strtok(const_cast<char *>(params.c_str()), " ");
+		std::vector<string> vec_params;
+		while (part_param)
+		{
+			vec_params.push_back(part_param);
+			part_param = strtok(NULL, " ");
+		}
+		if (vec_params[1] == "-o" || vec_params[1] == "+o")
+		{
+			if (params_nbr < 3)
+				return (send_msg(client, ERR_NEEDMOREPARAMS("2MODE")), 1);
+			this->_o(vec_params[1][0], vec_params[0], vec_params[2], client);
+		}
 	}
+	return 0;
 }
 
 int 	Server::_INVITE(string s_token, Client * client, string invited)

@@ -1,10 +1,10 @@
 NAME = ircserv
 
-SOURCES = main.cpp commands.cpp server.cpp
+SOURCES = *.cpp
 
 FLAGS = -Wall -Wextra -Werror
 
-HEADERS = server.hpp
+HEADERS = *.hpp
 
 # OBJECTS = server.o
 

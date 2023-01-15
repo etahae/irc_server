@@ -117,7 +117,7 @@ namespace irc
 				if (s_token == "NICK" || s_token == "USER" || s_token == "PASS"
 					|| s_token == "NOTICE" || s_token == "PRIVMSG" || s_token == "QUIT"
 					|| s_token == "JOIN" || s_token == "PART" || s_token == "KICK"
-					|| s_token == "INVITE")
+					|| s_token == "INVITE" || s_token == "MODE")
 					split(cmd, s_token, res);
 				this->_NICK(s_token, client, res);
 				this->_USER(s_token, client, res);
@@ -163,7 +163,16 @@ namespace irc
 			void	_NOTICE(string s_token, Client * client, string pass);
 			int 	_PRIVMSG(string s_token, Client * client, string msg);
 			void 	_PART(string s_token, Client * client, string channs);
-			void 	_MODE(string s_token, Client * client, string channs);
+			int 	_MODE(string s_token, Client * client, string channs);
+				void	_o(char sign, string _channel, string _nick, Client * client);
+				void	_i(char sign);
+				void	_p(char sign);
+				void	_t(char sign);
+				void	_l(char sign);
+				void	_b(char sign);
+				void	_m(char sign);
+				void	_v(char sign);
+				void	_k(char sign);
 			void 	_KICK(string s_token, Client * client, string res);
 			void	_QUIT(string s_token, Client * client, int i, size_t index);
 			int 	_INVITE(string s_token, Client * client, string invited);
@@ -182,6 +191,10 @@ namespace irc
 			string	ERR_TOOMANYTARGETS(string target)
 				{ return ("407 * " + target + " :Duplicate recipients.");}
 			string	ERR_NOSUCHNICK(string nick)
-				{ return (nick + " :No such nick/channel"); }
+				{ return ("401 * " + nick + " :No such nick/channel"); }
+			string ERR_NOSUCHCHAN(string chan)
+				{ return ("403 * " + chan + " :No such channel"); }
+			string ERR_CHANOPRIVSNEEDED(string chan)
+				{ return ("482 * " + chan + " :You're not channel operator"); }
 	};
 }
