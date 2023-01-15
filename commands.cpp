@@ -249,7 +249,7 @@ void 	Server::_KICK(string s_token, Client * client, string res)
 		{
 			chns = res.substr(0, i);
 			users = res.substr(i, res.size() - i);
-			str = strtok(const_cast<char *>(chns.c_str()), ",");//split channels with commas
+			str = strtok(const_cast<char *>(chns.c_str()), ",");//split channel with commas
 			std::map<string, Channel *>::iterator it;
 
 			while (str != NULL)
@@ -259,7 +259,7 @@ void 	Server::_KICK(string s_token, Client * client, string res)
 				v_channels.push_back(tmp);
 				str = strtok(NULL, ",");
 			}
-			str = strtok(const_cast<char *>(users.c_str()), ",");//split keys with commas
+			str = strtok(const_cast<char *>(users.c_str()), ",");//split users with commas
 			while (str != NULL)
 			{
 				string tmp = str;
@@ -280,7 +280,7 @@ void 	Server::_KICK(string s_token, Client * client, string res)
 				else if (it->second->operators.find(client->nick) == it->second->operators.end())
 					send_msg(client, "482 * " + it->first + " :You're not channel operator");
 				else
-					this->_PART("PART", it->second->members.find(v_users[i])->second, v_channels[i]);
+					this->leave_channels(it->second->members.find(v_users[i])->second, v_channels[i]);
 			}
 		}
 	}
@@ -307,6 +307,8 @@ void 	Server::_MODE(string s_token, Client * client, string params)
 
 int 	Server::_INVITE(string s_token, Client * client, string invited)
 {
+	std::map<string, Channel *>::iterator map_iter;
+
 	if (s_token == "INVITE\r\n" || s_token == "INVITE\n" || (s_token == "INVITE" && invited == ""))
 		return (send_msg(client, ERR_NEEDMOREPARAMS("INVITE")), 0);
 	else if (s_token == "INVITE")
@@ -325,8 +327,11 @@ int 	Server::_INVITE(string s_token, Client * client, string invited)
 		}
 		if (founded == false)	//no such client
 			return (send_msg(client, "401 * " + nickname + " :No such nick"), 0);
-		if (this->channels.find(channel) == this->channels.end())
+		map_iter = this->channels.find(channel);
+		if (map_iter == this->channels.end())
 			return (send_msg(client, "403 * " + channel + " :No such channel"), 0);
+		if (map_iter->second->members.find(this->clients[i]->nick) != map_iter->second->members.end())
+			return (send_msg(client, "443 * " + this->clients[i]->nick + " " + channel + " :is already on channel"), 0);
 	}
 	return 0;
 }
