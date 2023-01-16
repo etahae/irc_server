@@ -17,8 +17,8 @@ namespace irc
 			size_t	max_numbers;
 			string	modes; //oip...
 
+			std::map<string, bool>	bans;
 			std::map<string, Client *>	members;
-			std::map<string, string>	bans;
 			std::map<string, Client *>	operators;
 			std::map<string, Client *>	moderators;
 			std::map<string, int> 		invited_clients;	 
@@ -41,11 +41,10 @@ namespace irc
 			void	joinChannel(string name, const string &pass, Client *cl)
 			{
 				string err = "";
-				(void)name;
 				//check no pass or name given
 				if (!validateChannelName(name))
 					return ;
-				if(bans.find(cl->ip_address) != bans.end() && bans.find(cl->ip_address)->second == cl->nick)	//ban member (ex : MODE &ch_name +b user_name!realname@ip_address) (realname can be placed with *)
+				if(bans.find(cl->user_info()) != bans.end() || bans.find("*!*@*") != bans.end())	//ban member (ex : MODE &ch_name +b user_name!realname@ip_address) (realname can be placed with *)
 					err = "474 * " + this->ch_name + " :Cannot join channel (+b)";
 				else if (members.size() >= max_numbers)	//channel reach it's max member
 					err = "471 * " + this->ch_name + " :Cannot join channel (+l)";

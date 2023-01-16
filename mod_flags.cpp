@@ -159,7 +159,7 @@ void	Server::_t(char sign, string _channel, Client * _client)
 
 void	Server::_b(char sign, string _channel, Client * _client, string _user)
 {
-     std::map<string, Channel *>::iterator chan = this->channels.find(_channel);
+    std::map<string, Channel *>::iterator chan = this->channels.find(_channel);
     if (chan != this->channels.end())
     {
          std::map<string, Client *>::iterator oper = chan->second->operators.find(_client->nick);
@@ -167,26 +167,16 @@ void	Server::_b(char sign, string _channel, Client * _client, string _user)
         {
             if (_user == "")
             {
-                send_msg(_client, ERR_NEEDMOREPARAMS("MODE b"));
-				return ;
+                for (std::map<string, bool>::iterator it = chan->second->bans.begin(); it != chan->second->bans.end(); it++)
+                    send_msg(_client, "367 * " + _channel + " " + it->first);
+                send_msg(_client, "368 * RPL_ENDOFBANLIST");
             }
 			else
 			{
-				if (_user.find("!") == string::npos || _user.find("@") == string::npos)
-				{
-					send_msg(_client, ERR_NEEDMOREPARAMS("MODE b"));
-					return ;
-				}
-				int user_found = _user.find_first_of('!');
-				int ip_found = _user.find_first_of('@');
-				string nick_name = _user.substr(0, user_found);
-				string ip = _user.substr(ip_found + 1, _user.size());
 				if (sign == '+')
-					chan->second->bans.insert(std::pair<string, string> (ip, nick_name));
+					chan->second->bans.insert(std::pair <string, bool> (_user, 0));
 				else if (sign == '-')
-					chan->second->bans.erase(ip);
-				else
-					send_msg(_client, "501 * :Unknown MODE flag");
+                    chan->second->bans.erase(_user);
 			}
         }
         else
