@@ -10,6 +10,10 @@ void	Server::bot_call(std::string command, Client *cl)
 		logtime(cl);
 	else if (cmd == "users" || cmd == "USERS")
 		users(cl);
+	else if (cmd == "list" || cmd == "LIST")
+		channels_list(cl);
+	else if (cmd.compare(0, 5, "whois") == 0 || cmd.compare(0, 5, "WHOIS") == 0)
+		whois(cl, cmd);
 }
 
 void	Server::logtime(Client *cl)
@@ -34,4 +38,30 @@ void	Server::users(Client *cl)
 {
 	string msg = "300 * " + to_string(this->clients.size()) + " active user.";
 	this->send_msg(cl, msg);
+}
+
+void	Server::channels_list(Client *cl)
+{
+	for (std::map<string, Channel *>::iterator it = this->channels.begin(); it != this->channels.end(); it++)
+		this->send_msg(cl, "300 * " + it->first);
+}
+
+void	Server::whois(Client *cl, string cmd)
+{
+	trim_whiteSpaces(cmd);
+	string whois_ = "";
+	if (cmd.find_first_of(' ') == string::npos)
+		return ;
+	whois_ = cmd.substr(cmd.find_first_of(' ') + 1, cmd.size());
+	cout << "*" << whois_ << "*\n";
+	size_t i = 0;
+	if (whois_ == "")
+		return ;
+	for (;i < clients.size(); i++)
+	{
+		if (clients[i]->nick == whois_)
+			break ;
+	}
+	if (i < clients.size())
+		this->send_msg(cl, "300 * " + clients[i]->user_info());
 }
