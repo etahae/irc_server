@@ -45,7 +45,7 @@ namespace irc
 				//check no pass or name given
 				if (!validateChannelName(name))
 					return ;
-				if(bans.find(cl->ip_address) != bans.end() && bans.find(cl->ip_address)->second == cl->username)	//ban member (ex : MODE &ch_name +b user_name!realname@ip_address) (realname can be placed with *)
+				if(bans.find(cl->ip_address) != bans.end() && bans.find(cl->ip_address)->second == cl->nick)	//ban member (ex : MODE &ch_name +b user_name!realname@ip_address) (realname can be placed with *)
 					err = "474 * " + this->ch_name + " :Cannot join channel (+b)";
 				else if (members.size() >= max_numbers)	//channel reach it's max member
 					err = "471 * " + this->ch_name + " :Cannot join channel (+l)";

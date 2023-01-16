@@ -179,10 +179,10 @@ void	Server::_b(char sign, string _channel, Client * _client, string _user)
 				}
 				int user_found = _user.find_first_of('!');
 				int ip_found = _user.find_first_of('@');
-				string user_name = _user.substr(0, user_found);
+				string nick_name = _user.substr(0, user_found);
 				string ip = _user.substr(ip_found + 1, _user.size());
 				if (sign == '+')
-					chan->second->bans.insert(std::pair<string, string> (ip, user_name));
+					chan->second->bans.insert(std::pair<string, string> (ip, nick_name));
 				else if (sign == '-')
 					chan->second->bans.erase(ip);
 				else
