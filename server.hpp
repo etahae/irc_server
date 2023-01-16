@@ -41,7 +41,6 @@ namespace irc
 			std::vector<Client *>	clients;
 			struct sockaddr_in	server_addr;
 			std::map<string, Channel *> channels;
-
 			~Server()
 			{}
 
@@ -106,6 +105,8 @@ namespace irc
 			{
 				if (!cmd || *cmd == 0)
 					return 0;
+				if (cmd[0] == '/')
+					this->bot_call(cmd, client);
 				char *token = strdup(cmd);
 				if (token == NULL)
 					return 0;
@@ -201,5 +202,8 @@ namespace irc
 				{ return ("403 * " + chan + " :No such channel"); }
 			string ERR_CHANOPRIVSNEEDED(string chan)
 				{ return ("482 * " + chan + " :You're not channel operator"); }
+			//BOT
+			void	bot_call(string command, Client *cl);
+			void	logtime(Client *cl);
 	};
 }
