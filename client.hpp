@@ -28,16 +28,19 @@ namespace irc
 			int		fd_socket;
 			struct	sockaddr_in sock_addr;
 			bool	verified;
-			// std::vector<Channel *> channels;
+			time_t	start;
 
 			//constructors
-			Client():verified(false) {}
+			Client():verified(false)
+			{
+				start = time(NULL);
+			}
 			Client(int Fd, struct	sockaddr_in Sock_addr, string ip_, string Pass = string(), string Nick = string(), string Username = string())
 					: pass(Pass), nick(Nick),username(Username),  ip_address(ip_), fd_socket(Fd), sock_addr(Sock_addr)
 			{
+				start = time(NULL);
 				verified = false;
 			}
-
 			string user_info()
 			{
 				return (this->nick + "!" + this->username + "@" + this->ip_address);
