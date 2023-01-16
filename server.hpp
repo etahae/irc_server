@@ -147,6 +147,12 @@ namespace irc
 				{
 					delete this->clients[index];
 					this->clients.erase(this->clients.begin() + index);
+					for (std::map<string, Channel*>::iterator it = this->channels.begin(); it != this->channels.end(); it++)
+					{
+						it->second->members.erase(it->first);
+						it->second->operators.erase(it->first);
+						it->second->moderators.erase(it->first);
+					}
 				}
 			}
 
@@ -165,14 +171,13 @@ namespace irc
 			void 	_PART(string s_token, Client * client, string channs);
 			int 	_MODE(string s_token, Client * client, string channs);
 				void	_o(char sign, string _channel, string _nick, Client * client);
-				void	_i(char sign);
-				void	_p(char sign);
-				void	_t(char sign);
-				void	_l(char sign);
-				void	_b(char sign);
-				void	_m(char sign);
-				void	_v(char sign);
-				void	_k(char sign);
+				void	_i(char sign, string _channel, Client * _client);
+				void	_m(char sign, string _channel, Client * _client);
+				void	_v(char sign, string _channel, string _nick, Client * _client);
+				void	_k(char sign, string _channel, string _key, Client * _client);
+				void	_l(char sign, string _channel, string _limit, Client * _client);
+				void	_t(char sign, string _channel, Client * _client);
+				void	_b(char sign, string _channel, Client * _client, string user = "");
 			void 	_KICK(string s_token, Client * client, string res);
 			void	_QUIT(string s_token, Client * client, int i, size_t index);
 			int 	_INVITE(string s_token, Client * client, string invited);
@@ -186,7 +191,7 @@ namespace irc
 			string	check_channNAMEs(std::vector<string> &cls);
 			void	leave_channels(Client * client, string channel);
 			int		find_spaceInBetween(string str);
-
+			void	broadcast_mode(string _mode);
 			//ERROR THAT CAN'T BE DEFINED AS MACROS
 			string	ERR_TOOMANYTARGETS(string target)
 				{ return ("407 * " + target + " :Duplicate recipients.");}

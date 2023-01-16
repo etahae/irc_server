@@ -91,7 +91,7 @@ void    Server::_NOTICE(string s_token, Client * client, string msg)
     }
 }
 
-int	Server::_PRIVMSG(string s_token, Client * client, string msg)
+int		Server::_PRIVMSG(string s_token, Client * client, string msg)
 {
 	if (s_token == "PRIVMSG\r\n" || s_token == "PRIVMSG\n")
 		return (send_msg(client, ERR_NORECIPIENT("PRIVMSG")), 1);
@@ -144,7 +144,16 @@ int	Server::_PRIVMSG(string s_token, Client * client, string msg)
 					return (send_msg(client, "442 * " + target_chan->first + " :You're not on that channel"), 0);
 				for (std::map<string, Client *>::iterator it = target_chan->second->members.begin(); it != target_chan->second->members.end(); it++)
 					if (it->first != client->nick)
-            			send_msg(it->second, ":" + client->nick + " PRIVMSG " + cls[i] + sms);
+					{
+						if (target_chan->second->modes.find('m') != string::npos)
+						{
+							if (target_chan->second->moderators.find(client->nick) != target_chan->second->moderators.end()
+								|| target_chan->second->operators.find(client->nick) != target_chan->second->operators.end())
+            					send_msg(it->second, ":" + client->nick + " PRIVMSG " + cls[i] + sms);
+						}
+						else
+							send_msg(it->second, ":" + client->nick + " PRIVMSG " + cls[i] + sms);
+					}
 			}
 		}
 	}
@@ -298,7 +307,7 @@ int 	Server::_MODE(string s_token, Client * client, string params)
 	{
 		size_t params_nbr = params_calc(params);
 		if (params_nbr < 2)
-			return (send_msg(client, ERR_NEEDMOREPARAMS("1MODE")), 1);
+			return (send_msg(client, ERR_NEEDMOREPARAMS("MODE")), 1);
 		char* part_param = strtok(const_cast<char *>(params.c_str()), " ");
 		std::vector<string> vec_params;
 		while (part_param)
@@ -309,9 +318,42 @@ int 	Server::_MODE(string s_token, Client * client, string params)
 		if (vec_params[1] == "-o" || vec_params[1] == "+o")
 		{
 			if (params_nbr < 3)
-				return (send_msg(client, ERR_NEEDMOREPARAMS("2MODE")), 1);
+				return (send_msg(client, ERR_NEEDMOREPARAMS("MODE")), 1);
 			this->_o(vec_params[1][0], vec_params[0], vec_params[2], client);
 		}
+		else if (vec_params[1] == "-i" || vec_params[1] == "+i")
+			this->_i(vec_params[1][0], vec_params[0], client);
+		else if (vec_params[1] == "-m" || vec_params[1] == "+m")
+			this->_m(vec_params[1][0], vec_params[0], client);
+		else if (vec_params[1] == "-v" || vec_params[1] == "+v")
+		{
+			if (params_nbr < 3)
+				return (send_msg(client, ERR_NEEDMOREPARAMS("MODE")), 1);
+			this->_v(vec_params[1][0], vec_params[0], vec_params[2], client);
+		}
+		else if (vec_params[1] == "-k" || vec_params[1] == "+k")
+		{
+			if (params_nbr < 3)
+				return (send_msg(client, ERR_NEEDMOREPARAMS("MODE")), 1);
+			this->_k(vec_params[1][0], vec_params[0], vec_params[2], client);
+		}
+		else if (vec_params[1] == "-l" || vec_params[1] == "+l")
+		{
+			if (params_nbr < 3)
+				return (send_msg(client, ERR_NEEDMOREPARAMS("MODE")), 1);
+			this->_l(vec_params[1][0], vec_params[0], vec_params[2], client);
+		}
+		else if (vec_params[1] == "-t" || vec_params[1] == "+t")
+			this->_t(vec_params[1][0], vec_params[0], client);
+		else if (vec_params[1] == "-b" || vec_params[1] == "+b")
+		{
+			if (params_nbr == 2)
+				this->_b(vec_params[1][0], vec_params[0], client);
+			else
+				this->_b(vec_params[1][0], vec_params[0], client, vec_params[2]);
+		}
+		else
+			send_msg(client, "501 * :Unknown MODE flag");
 	}
 	return 0;
 }

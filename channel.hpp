@@ -20,6 +20,7 @@ namespace irc
 			std::map<string, Client *>	members;
 			std::map<string, Client *>	bans;
 			std::map<string, Client *>	operators;
+			std::map<string, Client *>	moderators;
 			std::map<string, int> 		invited_clients;	 
 
 			Channel():ch_name(""),passwd(""),max_numbers(9999) {}
@@ -84,6 +85,7 @@ namespace irc
 				this->operators.insert(std::pair<string,Client *> (cl->nick, cl));
 				this->members.insert(std::pair<string,Client *> (cl->nick, cl));
 				//send message to irc clients to verify that they joined the channel
+				this->modes = "nt";
 				string msg = ":" + cl->user_info() + " JOIN " + this->ch_name + "\r\n"
 				":Rαɠɳαɾöƙ MODE " + this->modes + " +nt\r\n"
 				":Rαɠɳαɾöƙ 353 " + cl->nick + " = " + this->ch_name + " :@" + cl->nick + "\r\n"
