@@ -157,7 +157,7 @@ void	Server::_t(char sign, string _channel, Client * _client)
         send_msg(_client, ERR_NOSUCHCHAN(_channel));
 }
 
-void	Server::_b(char sign, string _channel, Client * _client, string _user = "")
+void	Server::_b(char sign, string _channel, Client * _client, string _user)
 {
      std::map<string, Channel *>::iterator chan = this->channels.find(_channel);
     if (chan != this->channels.end())
@@ -172,6 +172,16 @@ void	Server::_b(char sign, string _channel, Client * _client, string _user = "")
                     // for (std::map<.)
                 }
             }
+			else
+			{
+				int user_found = _user.find_first_of('!');
+				int ip_found = _user.find_first_of('@');
+				string user_name = _user.substr(0, user_found);
+				string ip = _user.substr(ip_found + 1, _user.size());
+				// cout << "user : " << user_name << endl;
+				// cout << "ip__ : " << ip << endl;
+				chan->second->bans.insert(std::pair<string, string> (ip, user_name));
+			}
         }
         else
             send_msg(_client, ERR_CHANOPRIVSNEEDED(_channel));
