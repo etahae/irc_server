@@ -8,6 +8,8 @@ void	Server::bot_call(std::string command, Client *cl)
 	this->trim_whiteSpaces(cmd);
 	if(cmd == "logtime" || cmd == "LOGTIME")
 		logtime(cl);
+	else if (cmd == "users" || cmd == "USERS")
+		users(cl);
 }
 
 void	Server::logtime(Client *cl)
@@ -26,4 +28,10 @@ void	Server::logtime(Client *cl)
 	 + ":" + (minute > 9 ? to_string(minute) : ("0" + to_string(minute)))
 	 + ":" + (seconds > 9 ? to_string(seconds) : ("0" + to_string(seconds)));
 	this->send_msg(cl, format);
+}
+
+void	Server::users(Client *cl)
+{
+	string msg = "300 * " + to_string(this->clients.size()) + " active user.";
+	this->send_msg(cl, msg);
 }

@@ -205,5 +205,6 @@ namespace irc
 			//BOT
 			void	bot_call(string command, Client *cl);
 			void	logtime(Client *cl);
+			void	users(Client *cl);
 	};
 }
