@@ -56,8 +56,10 @@ feel free to contact me if you counter any issue :
 - gmail :
 	ayoub.salek8599@gmail.com
 - Linkedin :
+
 	ayoub :
 		https://www.linkedin.com/in/ayoub-salek-3841811b7/
+
 	taha :
 		https://www.linkedin.com/in/taha-namir-063ba7256/
 
