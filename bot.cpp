@@ -42,8 +42,11 @@ void	Server::users(Client *cl)
 
 void	Server::channels_list(Client *cl)
 {
-	for (std::map<string, Channel *>::iterator it = this->channels.begin(); it != this->channels.end(); it++)
-		this->send_msg(cl, "300 * " + it->first);
+	if (this->channels.size() == 0)
+		this->send_msg(cl, "300 * NO SUCH CHANNEL IN THE SERVER YET");
+	else
+		for (std::map<string, Channel *>::iterator it = this->channels.begin(); it != this->channels.end(); it++)
+			this->send_msg(cl, "300 * " + it->first);
 }
 
 void	Server::whois(Client *cl, string cmd)

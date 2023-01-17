@@ -13,6 +13,8 @@ void    Server::split(char *str, string &cmd, string &res)
 
 	token = strtok_r(rest, " ", &rest);
 	cmd = token;    //NICK || USER || PASS ...
+	if (!rest)
+		return ;
 	arg = rest;     //the whole command after removing NICK, ...
 	if (cmd == "NICK" || cmd == "PASS" || cmd == "USER" || cmd == "NOTICE"
 		|| cmd == "PRIVMSG" || cmd == "QUIT" || cmd == "JOIN" || cmd == "PART"
