@@ -4,10 +4,13 @@ An internet relay chat server
 
 ## How To Use
 
-first run the server it's up to you to choose any port or password you'd like
+first run the server it's up to you to choose any port or password you'd like.
+we used as a port : 2345 and as a password : 123
 
 ```
-run : $> make && ./ircserv "port" "password"
+git clone https://github.com/Asalek/irc_server.git
+cd irc_server
+make && ./ircserv 2345 123
 ```
 
 to use this irc server i recommend to use <strong>nc, limechat or pidgin</strong> These are what we test and we sure they work perfectly with our server.
