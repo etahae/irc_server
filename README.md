@@ -53,6 +53,7 @@ feel free to contact me if you counter any issue :
 - gmail :
 	ayoub.salek8599@gmail.com
 - Linkedin :
+
 	ayoub :
 		https://www.linkedin.com/in/ayoub-salek-3841811b7/
 
