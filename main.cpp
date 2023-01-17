@@ -16,6 +16,8 @@
 
 using namespace irc;
 
+string	concat;
+
 bool is_digits_or_length_over(char *str)
 {
 	int i = 0;
@@ -51,6 +53,12 @@ void connect(Server &server, char *buffer, int i, size_t index)
 	string str_buffer;
 	while (buffer[char_index])
 	{
+		if (strchr(buffer, '\n') == NULL)
+		{
+			if (buffer)
+				concat += buffer;
+			return ;
+		}
 		while (buffer[char_index] != '\n' && buffer[char_index])
 		{
 			str_buffer += buffer[char_index];
@@ -58,6 +66,11 @@ void connect(Server &server, char *buffer, int i, size_t index)
 		}
 		str_buffer += buffer[char_index];
 		char_index++;
+		if (concat != "")
+		{
+			concat += buffer;
+			str_buffer = concat;
+		}
 		if (server.clients[index]->verified == false)
 		{
 			if (server.client_verifying(const_cast<char *>(str_buffer.c_str()), server.clients[index], i, index))
@@ -79,6 +92,7 @@ void connect(Server &server, char *buffer, int i, size_t index)
 		else
 			server.customer_service(const_cast<char *>(str_buffer.c_str()), server.clients[index], i, index);
 		str_buffer = "";
+		concat = "";
 	}
 	// if (server.clients[index]->verified == true)
 	// 	write(server.clients[index]->fd_socket, VERIFIED, strlen(VERIFIED));
