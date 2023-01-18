@@ -134,11 +134,7 @@ int		Server::_PRIVMSG(string s_token, Client * client, string msg)
         sms.insert(0, " ");
 		if (valid_cls == "")
         	for (size_t i = 0; i < cls.size(); i++)
-			{
-				// if (channels.find(client->nick) == channels.end())
-				// 	_JOIN("JOIN", find_client(cls[i]), client->nick);
-            	send_msg(this->find_client(cls[i]), ":" + client->nick + " PRIVMSG " + client->nick + sms);
-			}
+            	send_msg(this->find_client(cls[i]), ":" + client->nick + " PRIVMSG " + cls[i] + sms);
 		else	//channels message
 		{
 			for (size_t i = 0; i < cls.size(); i++)
@@ -186,48 +182,40 @@ void	Server::_JOIN(string s_token, Client * client, string chann)
 		std::vector<string> v_keys;
 
 		int i = find_spaceInBetween(chann);
-		if (i == 0)
-			i = chann.size();
-		chns = chann.substr(0, i);
-		keys = chann.substr(i, chann.size() - i);
-		str = strtok(const_cast<char *>(chns.c_str()), ",");//split channels with commas
-		while (str != NULL)
+		if (i)
 		{
-			string tmp = str;
-			this->trim_whiteSpaces(tmp);
-			v_channels.push_back(tmp);
-			str = strtok(NULL, ",");
-		}
-		str = strtok(const_cast<char *>(keys.c_str()), ",");//split keys with commas
-		size_t key_chan = 0;
-		while (key_chan < v_channels.size())
-		{
-			string tmp;
-			if (str)
+			chns = chann.substr(0, i);
+			keys = chann.substr(i, chann.size() - i);
+			str = strtok(const_cast<char *>(chns.c_str()), ",");//split channels with commas
+			while (str != NULL)
 			{
-				tmp = str;
-				this->trim_whiteSpaces(tmp);
+				string tmp = str;
+				Server::trim_whiteSpaces(tmp);
+				v_channels.push_back(tmp);
+				str = strtok(NULL, ",");
 			}
-			else
-				tmp = "";
-			v_keys.push_back(tmp);
-			str = strtok(NULL, ",");
-			key_chan++;
+			str = strtok(const_cast<char *>(keys.c_str()), ",");//split keys with commas
+			while (str != NULL)
+			{
+				string tmp = str;
+				Server::trim_whiteSpaces(tmp);
+				v_keys.push_back(tmp);
+				str = strtok(NULL, ",");
+			}
+			if (v_keys.size() != v_channels.size())	//check that the same amount of channels and keys
+			{
+				send_msg(client, ERR_NEEDMOREPARAMS("JOIN"));
+				return ;
+			}
+			for (size_t i = 0; i < v_keys.size(); i++)
+			{
+				if (this->channels.find(v_channels[i]) == this->channels.end())
+					this->channels.insert(std::pair<string, Channel *>(v_channels[i], new Channel(v_channels[i], v_keys[i])));
+				this->channels.find(v_channels[i])->second->joinChannel(v_channels[i], v_keys[i], client);
+			}
 		}
-		// if (v_keys.size() != v_channels.size())	//check that the same amount of channels and keys
-		// {
-		// 	send_msg(client, ERR_NEEDMOREPARAMS("JOIN"));
-		// 	return ;
-		// }
-		for (size_t i = 0; i < v_channels.size(); i++)
-		{
-			if (this->channels.find(v_channels[i]) == this->channels.end())
-				this->channels.insert(std::pair<string, Channel *>(v_channels[i], new Channel(v_channels[i], v_keys[i])));
-			this->channels.find(v_channels[i])->second->joinChannel(v_channels[i], v_keys[i], client);
-		}
-		// }
-		// else
-		// 	send_msg(client, ERR_NEEDMOREPARAMS("JOIN"));	//in case of JOIN failed
+		else
+			send_msg(client, ERR_NEEDMOREPARAMS("JOIN"));	//in case of JOIN failed
 	}
 }
 
@@ -344,7 +332,11 @@ int 	Server::_MODE(string s_token, Client * client, string params)
 			this->_v(vec_params[1][0], vec_params[0], vec_params[2], client);
 		}
 		else if (vec_params[1] == "-k" || vec_params[1] == "+k")
+		{
+			if (params_nbr < 3)
+				return (send_msg(client, ERR_NEEDMOREPARAMS("MODE")), 1);
 			this->_k(vec_params[1][0], vec_params[0], vec_params[2], client);
+		}
 		else if (vec_params[1] == "-l" || vec_params[1] == "+l")
 		{
 			if (params_nbr < 3)
