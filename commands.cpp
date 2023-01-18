@@ -131,15 +131,11 @@ int		Server::_PRIVMSG(string s_token, Client * client, string msg)
             sms.insert(0, ": ");
         else if (sms[find_pts + 1] != ' ')
             sms.insert(find_pts + 1, " ");
-        if (sms.find("DCC") == string::npos)
+        if (sms.find("DCC") == string::npos) // direct client to client file transfer doesn't require space
 			sms.insert(0, " ");
-		cout << "*" << sms << "#" << endl;
 		if (valid_cls == "")
         	for (size_t i = 0; i < cls.size(); i++)
-			{
             	send_msg(this->find_client(cls[i]), ":" + client->user_info() + " PRIVMSG " + cls[i] + sms);
-				cout << ":" + client->user_info() + " PRIVMSG " + cls[i] + sms << endl;
-			}
 		else	//channels message
 		{
 			for (size_t i = 0; i < cls.size(); i++)

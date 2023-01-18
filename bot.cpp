@@ -14,6 +14,58 @@ void	Server::bot_call(std::string command, Client *cl)
 		channels_list(cl);
 	else if (cmd.compare(0, 5, "whois") == 0 || cmd.compare(0, 5, "WHOIS") == 0)
 		whois(cl, cmd);
+	else if (cmd == "help" || cmd == "HELP")
+		help(cl);
+	else if (cmd == "owners" || cmd == "OWNERS")
+		owners(cl);
+}
+
+void	Server::help(Client *cl)
+{
+	string msg = ":Rαɠɳαɾöƙ NOTICE :\r\n" 
+	"NOTICE Rαɠɳαɾöƙ :                          .-\"\"\"-.\r\n"
+    "NOTICE Rαɠɳαɾöƙ :                         /`       `\"    \r\n"
+    "NOTICE Rαɠɳαɾöƙ :  ,-==-.    b            ;           ;\r\n"
+    "NOTICE Rαɠɳαɾöƙ : /(    \\`.              |           |\r\n"
+   "NOTICE Rαɠɳαɾöƙ : |\\ ,-. \\ (             :           ;\r\n"
+    "NOTICE Rαɠɳαɾöƙ : \\ \\`-.> ) 1             \\         /\r\n"
+    "NOTICE Rαɠɳαɾöƙ :  \\_`.   | |              `._   _.`\r\n"
+    "NOTICE Rαɠɳαɾöƙ :   \\o_`-_|/                _|`\"'|-.\r\n"
+    "NOTICE Rαɠɳαɾöƙ :  /`  `>.  __          .-'`-|___|_ )    logtime\r\n"
+    "NOTICE Rαɠɳαɾöƙ : |\\  (^  >'  `>-----._/             )   users\r\n"
+    "NOTICE Rαɠɳαɾöƙ : | `._\\ /    /      / |      ---   -;    list\r\n"
+    "NOTICE Rαɠɳαɾöƙ : :     `|   (      (  |      ___  _/     whois\r\n"
+    "NOTICE Rαɠɳαɾöƙ :  \\     `.  `\\      \\_\\      ___ _/      help\r\n"
+    "NOTICE Rαɠɳαɾöƙ :   `.     `-='`t----'  `--.______/       owners\r\n"
+    "NOTICE Rαɠɳαɾöƙ :     `.   ,-''-.)           |---|       \r\n"
+    "NOTICE Rαɠɳαɾöƙ :       `.(,-=-./             \\_/        (asalek & tnamir)\r\n"
+    "NOTICE Rαɠɳαɾöƙ :          |   |               V\r\n"
+    "NOTICE Rαɠɳαɾöƙ :          |-''`-.             `.\r\n"
+	"NOTICE Rαɠɳαɾöƙ :       /  ,-'-.\\              `-.\r\n"
+    "NOTICE Rαɠɳαɾöƙ :        |  (      \\                `.\r\n"
+    "NOTICE Rαɠɳαɾöƙ :         \\  \\     |               ,.'\r\n"
+	;
+	this->send_msg(cl, msg);
+}
+
+void	Server::owners(Client *cl)
+{
+	string format = ":Rαɠɳαɾöƙ NOTICE :\r\n"
+	"NOTICE Rαɠɳαɾöƙ :   ____                               \\ \r\n"
+	"NOTICE Rαɠɳαɾöƙ :  /  __\\          ____                     \\ \r\n"
+	"NOTICE Rαɠɳαɾöƙ :  \\( oo          (___ \\                     \\ \r\n"
+	"NOTICE Rαɠɳαɾöƙ :  _\\_o/           oo~)/\r \n"
+	"NOTICE Rαɠɳαɾöƙ :  / \\|/ \\         _\\-_/_ \r\n"
+	"NOTICE Rαɠɳαɾöƙ : / / __\\ \\___    / \\|/  \\ \r\n"
+	"NOTICE Rαɠɳαɾöƙ : \\ \\|   |__/_)  / / .- \\ \\ \r\n"
+	"NOTICE Rαɠɳαɾöƙ :  \\/_)  |       \\ \\ .  /_/\r\n"
+	"NOTICE Rαɠɳαɾöƙ :  ||___|        \\/___(_/\r\n"
+	"NOTICE Rαɠɳαɾöƙ :  | | |          | |  |\r\n"
+	"NOTICE Rαɠɳαɾöƙ :  | | |          | |  |\r\n"
+	"NOTICE Rαɠɳαɾöƙ :  |_|_|          |_|__|\r\n"
+	"NOTICE Rαɠɳαɾöƙ :  [__)_)        (_(___]\r\n"
+	"NOTICE Rαɠɳαɾöƙ :  Ayoub Salek     Taha Namir\r\n";
+	this->send_msg(cl, format);
 }
 
 void	Server::logtime(Client *cl)
@@ -56,7 +108,6 @@ void	Server::whois(Client *cl, string cmd)
 	if (cmd.find_first_of(' ') == string::npos)
 		return ;
 	whois_ = cmd.substr(cmd.find_first_of(' ') + 1, cmd.size());
-	cout << "*" << whois_ << "*\n";
 	size_t i = 0;
 	if (whois_ == "")
 		return ;
