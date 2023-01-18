@@ -83,7 +83,7 @@ void    Server::_NOTICE(string s_token, Client * client, string msg)
             Client * receiver = find_client(nick_name);
             if (receiver != nullptr)
             {
-                string letter = ":" + client->nick + " PRIVMSG " + string(nick_name) + " : " + msg_token;
+                string letter = ":" + client->user_info() + " PRIVMSG " + string(nick_name) + " : " + msg_token;
                 send_msg(receiver, letter);
             }
         }
@@ -152,7 +152,7 @@ int		Server::_PRIVMSG(string s_token, Client * client, string msg)
             					send_msg(it->second, ":" + client->user_info() + " PRIVMSG " + cls[i] + sms);
 						}
 						else
-							send_msg(it->second, ":" + client->nick + " PRIVMSG " + cls[i] + sms);
+							send_msg(it->second, ":" + client->user_info() + " PRIVMSG " + cls[i] + sms);
 					}
 			}
 		}

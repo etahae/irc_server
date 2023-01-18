@@ -14,12 +14,12 @@ void	Server::_o(char sign, string _channel, string _nick, Client * _client)
             {
                 chan->second->operators.insert(std::pair<string, Client *> (_nick, find_client(_nick)));
                 chan->second->moderators.insert(std::pair<string, Client *> (_nick, find_client(_nick)));
-                send_msg(find_client(_nick), ":" + _client->nick + " PRIVMSG " + _nick + " : You just got oper_privelage at " + _channel);
+                send_msg(find_client(_nick), ":" + _client->user_info() + " PRIVMSG " + _nick + " : You just got oper_privelage at " + _channel);
             }
             else if (sign == '-')
             {
                 chan->second->operators.erase(_nick);
-                send_msg(find_client(_nick), ":" + _client->nick + " PRIVMSG " + _nick + " : You just lost oper_privelage at " + _channel);
+                send_msg(find_client(_nick), ":" + _client->user_info() + " PRIVMSG " + _nick + " : You just lost oper_privelage at " + _channel);
             }
         }
         else
@@ -82,12 +82,12 @@ void	Server::_v(char sign, string _channel, string _nick, Client * _client)
             if (sign == '+')
             {
                 chan->second->moderators.insert(std::pair<string, Client *> (_nick, find_client(_nick)));
-                send_msg(find_client(_nick), ":" + _client->nick + " PRIVMSG " + _nick + " : You just got permission to chat at " + _channel);
+                send_msg(find_client(_nick), ":" + _client->user_info() + " PRIVMSG " + _nick + " : You just got permission to chat at " + _channel);
             }
             else if (sign == '-')
             {
                 chan->second->moderators.erase(_nick);
-                send_msg(find_client(_nick), ":" + _client->nick + " PRIVMSG " + _nick + " : You just lost permission to chat at " + _channel);
+                send_msg(find_client(_nick), ":" + _client->user_info() + " PRIVMSG " + _nick + " : You just lost permission to chat at " + _channel);
             }
         }
         else
