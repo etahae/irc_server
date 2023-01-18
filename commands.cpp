@@ -134,7 +134,7 @@ int		Server::_PRIVMSG(string s_token, Client * client, string msg)
         sms.insert(0, " ");
 		if (valid_cls == "")
         	for (size_t i = 0; i < cls.size(); i++)
-            	send_msg(this->find_client(cls[i]), ":" + client->nick + " PRIVMSG " + cls[i] + sms);
+            	send_msg(this->find_client(cls[i]), ":" + client->user_info() + " PRIVMSG " + cls[i] + sms);
 		else	//channels message
 		{
 			for (size_t i = 0; i < cls.size(); i++)
@@ -149,7 +149,7 @@ int		Server::_PRIVMSG(string s_token, Client * client, string msg)
 						{
 							if (target_chan->second->moderators.find(client->nick) != target_chan->second->moderators.end()
 								|| target_chan->second->operators.find(client->nick) != target_chan->second->operators.end())
-            					send_msg(it->second, ":" + client->nick + " PRIVMSG " + cls[i] + sms);
+            					send_msg(it->second, ":" + client->user_info() + " PRIVMSG " + cls[i] + sms);
 						}
 						else
 							send_msg(it->second, ":" + client->nick + " PRIVMSG " + cls[i] + sms);
