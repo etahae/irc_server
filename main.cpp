@@ -84,7 +84,7 @@ void connect(Server &server, char *buffer, int i, size_t index)
 					":Rαɠɳαɾöƙ 004 " + server.clients[index]->nick + " Rαɠɳαɾöƙ 1.0 - -\r\n"
 					":Rαɠɳαɾöƙ 372 " + server.clients[index]->nick + " 🔨 𝔚𝔢𝔩𝔠𝔬𝔪𝔢 𝔗𝔬 Rαɠɳαɾöƙ 🔨\r\n"
 					":Rαɠɳαɾöƙ 376 " + server.clients[index]->nick + " :End of /MOTD command\r\n";
-					write(server.clients[index]->fd_socket, rpl.c_str(), rpl.size());
+					send(server.clients[index]->fd_socket, rpl.c_str(), rpl.size(), 0);
 					server.clients[index]->verified = true;
 					cout << CONNECTED << server.clients[index]->nick << " Connected" << endl;
 				}
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 					int n;
 					if (client_index >= 0)
 					{
-						if ((n = read(server.clients[client_index]->fd_socket, buffer, ARG_MAX)) < 0)
+						if ((n = recv(server.clients[client_index]->fd_socket, buffer, ARG_MAX, 0)) < 0)
 							return 1;
 						if (n > 0)
 							connect(server, buffer, i, client_index);

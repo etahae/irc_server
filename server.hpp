@@ -160,7 +160,7 @@ namespace irc
 			void	send_msg(Client *client, string msg)
 			{
 				msg = msg + "\r\n";
-				write(client->fd_socket, msg.c_str(), msg.size());
+				send(client->fd_socket, msg.c_str(), msg.size(), 0);
 			}
 
 			void	_NICK(string s_token, Client * client, string nick);

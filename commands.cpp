@@ -134,7 +134,10 @@ int		Server::_PRIVMSG(string s_token, Client * client, string msg)
         sms.insert(0, " ");
 		if (valid_cls == "")
         	for (size_t i = 0; i < cls.size(); i++)
+			{
             	send_msg(this->find_client(cls[i]), ":" + client->user_info() + " PRIVMSG " + cls[i] + sms);
+				cout << ":" + client->user_info() + " PRIVMSG " + cls[i] + sms << endl;
+			}
 		else	//channels message
 		{
 			for (size_t i = 0; i < cls.size(); i++)
