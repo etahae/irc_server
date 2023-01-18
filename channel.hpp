@@ -42,8 +42,9 @@ namespace irc
 			{
 				string err = "";
 				//check no pass or name given
-				if (!validateChannelName(name))
-					return ;
+				// if (!validateChannelName(name))
+				// 	return ;
+				(void)name;
 				if(bans.find(cl->user_info()) != bans.end() || bans.find("*!*@*") != bans.end())	//ban member (ex : MODE &ch_name +b user_name!realname@ip_address) (realname can be placed with *)
 					err = "474 * " + this->ch_name + " :Cannot join channel (+b)";
 				else if (members.size() >= max_numbers)	//channel reach it's max member
@@ -69,16 +70,16 @@ namespace irc
 					return ;
 				}
 			}
-			int	validateChannelName(const string &str)
-			{
-				string channelRegex = "ABCDEFGHIKLMNOPQRSTVXYZabcdefghijklmnopqrstuvwxyz\r\n";
+			// int	validateChannelName(const string &str)
+			// {
+			// 	string channelRegex = "ABCDEFGHIKLMNOPQRSTVXYZabcdefghijklmnopqrstuvwxyz\r\n";
 				
-				int position = str.find_last_not_of(channelRegex);
-				if (position == 0)
-					if (str[0] == '&' || str[0] == '#')
-						return 1;
-				return 0;
-			}
+			// 	int position = str.find_last_not_of(channelRegex);
+			// 	if (position == 0)
+			// 		if (str[0] == '&' || str[0] == '#')
+			// 			return 1;
+			// 	return 0;
+			// }
 			void	insert_in_operator(Client *cl)
 			{
 				this->operators.insert(std::pair<string,Client *> (cl->nick, cl));

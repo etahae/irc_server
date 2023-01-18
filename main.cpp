@@ -49,7 +49,10 @@ int	findClientIndexByFD(Server &server, int fd)
 
 void connect(Server &server, char *buffer, int i, size_t index)
 {
-	std::cout << buffer << std::flush;
+	if (server.clients[index]->nick == "")
+		cout << "_unknown_user" << " : " << buffer << std::flush;
+	else
+		cout << server.clients[index]->nick << " : " << buffer << std::flush;
 	size_t char_index = 0;
 	string str_buffer;
 	while (buffer[char_index])
@@ -104,7 +107,23 @@ void	sigquit_handler(int sig)
 	(void)sig;
 	cout << "\b\b" << std::flush;
 	for (size_t i = 0; i < server.clients.size(); i++)
-		server.disconnect(i, server.clients[i]->fd_socket, server.clients[i]->fd_socket);
+	{
+		FD_CLR( server.clients[i]->fd_socket , &server.r_socket);
+		FD_CLR(server.clients[i]->fd_socket, &server.w_socket);
+		close(server.clients[i]->fd_socket);
+		delete server.clients[i];
+		if (server.clients[i] && server.clients[i]->nick == "")
+			cout << DISCONNECTED << "_unknown_user" << " Disconnected" << endl;
+		else
+			cout << DISCONNECTED << server.clients[i]->nick << " Disconnected" << endl;
+		// for (std::map<string, Channel*>::iterator it = server.channels.begin(); it != server.channels.end(); it++)
+		// {
+		// 	it->second->members.erase(it->first);
+		// 	it->second->operators.erase(it->first);
+		// 	it->second->moderators.erase(it->first);
+		// }
+		// server.disconnect(i, server.clients[i]->fd_socket, server.clients[i]->fd_socket);
+	}
 	cout << "\033[0;31mServer is down !\033[0m" << endl;
 	exit(0);
 }
