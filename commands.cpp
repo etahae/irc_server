@@ -131,7 +131,9 @@ int		Server::_PRIVMSG(string s_token, Client * client, string msg)
             sms.insert(0, ": ");
         else if (sms[find_pts + 1] != ' ')
             sms.insert(find_pts + 1, " ");
-        sms.insert(0, " ");
+        if (sms.find("DCC") == string::npos)
+			sms.insert(0, " ");
+		cout << "*" << sms << "#" << endl;
 		if (valid_cls == "")
         	for (size_t i = 0; i < cls.size(); i++)
 			{
