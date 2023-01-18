@@ -143,7 +143,10 @@ void	Server::leave_channels(Client * client, string channel)
 			it->second->operators.erase(client->nick);
 		}
 		if (it->second->members.size() == 0) //erase channel when no member left in it
-			this->channels.erase(it);
+		{
+			delete it->second;
+			this->channels.erase(it->first);
+		}
 		else if (it->second->members.size() > 0 && it->second->operators.size() == 0)
 			it->second->operators.insert(std::pair<string, Client *> (it->second->members.begin()->first, 
 			it->second->members.begin()->second));

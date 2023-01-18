@@ -99,22 +99,13 @@ void	Server::_v(char sign, string _channel, string _nick, Client * _client)
 
 void	Server::_k(char sign, string _channel, string _key, Client * _client)
 {
+    (void)sign;(void)_key;
     std::map<string, Channel *>::iterator chan = this->channels.find(_channel);
     if (chan != this->channels.end())
     {
          std::map<string, Client *>::iterator oper = chan->second->operators.find(_client->nick);
         if (oper != chan->second->operators.end())
-        {
-            if (sign == '+')
-            {
-                if (chan->second->passwd == "")
-                    chan->second->passwd = _key;
-                else
-                    send_msg(_client, "467 * " + _channel + " :Channel key already set");
-            }
-            else if (sign == '-')
-                chan->second->passwd = "";
-        }
+            send_msg(_client, "467 * " + _channel + " :Channel key already set");
         else
             send_msg(_client, ERR_CHANOPRIVSNEEDED(_channel));
     }
