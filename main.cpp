@@ -17,6 +17,7 @@
 using namespace irc;
 
 string	concat;
+Server server;
 
 bool is_digits_or_length_over(char *str)
 {
@@ -98,11 +99,18 @@ void connect(Server &server, char *buffer, int i, size_t index)
 	// 	write(server.clients[index]->fd_socket, VERIFIED, strlen(VERIFIED));
 }
 
+void	sigquit_handler(int sig)
+{
+	(void)sig;
+	cout << "\b\b" << std::flush;
+	for (size_t i = 0; i < server.clients.size(); i++)
+		server.disconnect(i, server.clients[i]->fd_socket, server.clients[i]->fd_socket);
+	cout << "\033[0;31mServer is down !\033[0m" << endl;
+	exit(0);
+}
+
 int main(int argc, char **argv)
 {
-
-	Server server;
-
 	if (argc != 3)
 		return (server.fatal_error("Usage: $> ./ircserv <port> <password>"));
 	if (is_digits_or_length_over(argv[1]))
@@ -118,6 +126,10 @@ int main(int argc, char **argv)
 	FD_SET(server._socket, &server.r_socket); // this to read from client sockets and accept them
 
 	char buffer[ARG_MAX];
+
+	signal(SIGINT, sigquit_handler);
+
+	cout << "\033[0;32mServer is up !\033[0m" << endl;
 
 	while (1)
 	{
