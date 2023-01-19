@@ -147,7 +147,7 @@ void	Server::leave_channels(Client * client, string channel)
 			delete it->second;
 			this->channels.erase(it->first);
 		}
-		else if (it->second->members.size() > 0 && it->second->operators.size() == 0)
+		else if (it->second->members.size() > 0 && it->second->operators.size() == 0) //if an operator left the next member replace hem
 			it->second->operators.insert(std::pair<string, Client *> (it->second->members.begin()->first, 
 			it->second->members.begin()->second));
 	}

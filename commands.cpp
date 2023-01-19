@@ -289,12 +289,25 @@ void 	Server::_KICK(string s_token, Client * client, string res)
 			for (size_t i = 0; i < v_channels.size(); i++)
 			{
 				it = this->channels.find(v_channels[i]);
-				if (it == this->channels.end() || this->channels.size() == 0)
+				if (it == this->channels.end() || this->channels.size() == 0)	//channel not exist
 					send_msg(client, "403 * " + v_channels[i] + " :No such channel");
-				else if (it->second->operators.find(client->nick) == it->second->operators.end())
+				else if (it->second->operators.find(client->nick) == it->second->operators.end()) //user not operator
 					send_msg(client, "482 * " + it->first + " :You're not channel operator");
+				else if (it->second->members.find(v_users[i]) == it->second->members.end())//kicked user not exist
+					send_msg(client, "442 * " + v_users[i] + " : is not on that channel");
+				else if (it->second->members.find(client->nick) == it->second->members.end()) //the kicker not on that channel
+					send_msg(client, "442 * " + client->nick + " : not on channel");
 				else
-					this->leave_channels(it->second->members.find(v_users[i])->second, v_channels[i]);
+				{
+					for (std::map<string, Client*>::iterator ii = it->second->members.begin(); ii != it->second->members.end(); ii++)
+					{
+						string msg = ":" + it->second->members.find(v_users[i])->first + " PART " + it->first + "\r\n";
+						send_msg(ii->second, msg);
+					}
+					it->second->members.erase(v_users[i]);
+					it->second->operators.erase(v_users[i]);
+					it->second->moderators.erase(v_users[i]);
+				}
 			}
 		}
 	}
