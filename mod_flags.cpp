@@ -160,7 +160,9 @@ void	Server::_t(char sign, string _channel, Client * _client)
 void	Server::_b(char sign, string _channel, Client * _client, string _user)
 {
     std::map<string, Channel *>::iterator chan = this->channels.find(_channel);
-    if (chan != this->channels.end())
+	if (_user.find('!') == string::npos || _user.find('@') == string::npos)
+		send_msg(_client, ERR_NOSUCHNICK(_user));
+    else if (chan != this->channels.end())
     {
          std::map<string, Client *>::iterator oper = chan->second->operators.find(_client->nick);
         if (oper != chan->second->operators.end())
@@ -174,7 +176,11 @@ void	Server::_b(char sign, string _channel, Client * _client, string _user)
 			else
 			{
 				if (sign == '+')
+				{
 					chan->second->bans.insert(std::pair <string, bool> (_user, 0));
+					if (chan->second->members.find(_user.substr(0, _user.find('!'))) != chan->second->members.end())
+						this->leave_channels(chan->second->members.find(_user.substr(0, _user.find('!')))->second, chan->first);
+				}
 				else if (sign == '-')
                     chan->second->bans.erase(_user);
 			}

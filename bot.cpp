@@ -25,7 +25,7 @@ void	Server::help(Client *cl)
 	string msg = ":Rαɠɳαɾöƙ NOTICE :\r\n" 
 	"NOTICE Rαɠɳαɾöƙ :                          .-\"\"\"-.\r\n"
     "NOTICE Rαɠɳαɾöƙ :                         /`       `\"    \r\n"
-    "NOTICE Rαɠɳαɾöƙ :  ,-==-.    b            ;           ;\r\n"
+    "NOTICE Rαɠɳαɾöƙ :  ,-==-.                ;           ;\r\n"
     "NOTICE Rαɠɳαɾöƙ : /(    \\`.              |           |\r\n"
    "NOTICE Rαɠɳαɾöƙ : |\\ ,-. \\ (             :           ;\r\n"
     "NOTICE Rαɠɳαɾöƙ : \\ \\`-.> ) 1             \\         /\r\n"
@@ -51,9 +51,9 @@ void	Server::help(Client *cl)
 void	Server::owners(Client *cl)
 {
 	string format = ":Rαɠɳαɾöƙ NOTICE :\r\n"
-	"NOTICE Rαɠɳαɾöƙ :   ____                               \\ \r\n"
-	"NOTICE Rαɠɳαɾöƙ :  /  __\\          ____                     \\ \r\n"
-	"NOTICE Rαɠɳαɾöƙ :  \\( oo          (___ \\                     \\ \r\n"
+	"NOTICE Rαɠɳαɾöƙ :   ____                    \r\n"
+	"NOTICE Rαɠɳαɾöƙ :  /  __\\          ____     \r\n"
+	"NOTICE Rαɠɳαɾöƙ :  \\( oo          (___ \\    \r\n"
 	"NOTICE Rαɠɳαɾöƙ :  _\\_o/           oo~)/\r \n"
 	"NOTICE Rαɠɳαɾöƙ :  / \\|/ \\         _\\-_/_ \r\n"
 	"NOTICE Rαɠɳαɾöƙ : / / __\\ \\___    / \\|/  \\ \r\n"
