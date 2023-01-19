@@ -1,21 +1,27 @@
 NAME = ircserv
 
-SOURCES = *.cpp
+CC = c++
 
-FLAGS = -Wall -Wextra -Werror
+SRC = server.cpp mod_flags.cpp main.cpp commands.cpp bot.cpp
 
-HEADERS = *.hpp
+FLAGS = -Wall -Wextra -Werror -std=c++98
 
-# OBJECTS = server.o
+HEADERS = channel.hpp client.hpp server.hpp
+
+OBJ = $(SRC:.cpp=.o)
 
 all : $(NAME)
 
-$(NAME) : $(SOURCES) $(HEADERS)
-	@c++ $(SOURCES) $(FLAGS) -std=c++98 -o $(NAME)
+$(NAME) : $(OBJ)
+	$(CC) $(FLAGS) $(OBJ) -o $(NAME)
+
+%.o : %.cpp $(HEADERS)
+	$(CC) $(FLAGS) -o $@ -c $<
 
 clean :
-	@rm -rf $(NAME)
+	rm -f $(OBJ)
 
 fclean : clean
+	rm -f $(NAME)
 
 re : fclean all
