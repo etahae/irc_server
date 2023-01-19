@@ -18,6 +18,8 @@ void	Server::bot_call(std::string command, Client *cl)
 		help(cl);
 	else if (cmd == "owners" || cmd == "OWNERS")
 		owners(cl);
+	else
+		irc_commands(cl);
 }
 
 void	Server::help(Client *cl)
@@ -118,4 +120,28 @@ void	Server::whois(Client *cl, string cmd)
 	}
 	if (i < clients.size())
 		this->send_msg(cl, "300 * " + clients[i]->user_info());
+}
+
+void	Server::irc_commands(Client *cl)
+{
+	string format = "NOTICE Rαɠɳαɾöƙ : Thies are the commands that our IRC server has\r\n"
+	"NOTICE Rαɠɳαɾöƙ :              IRC :\r\n"
+	"NOTICE Rαɠɳαɾöƙ : JOIN (channel_name) (password)\r\n"
+	"NOTICE Rαɠɳαɾöƙ : KICK (channel_name) (nick_name)\r\n"
+	"NOTICE Rαɠɳαɾöƙ : PRIVMSG (nick_name) (message)\r\n"
+	"NOTICE Rαɠɳαɾöƙ : NOTICE (nick_name) (message)\r\n"
+	"NOTICE Rαɠɳαɾöƙ : PART (channel_name)\r\n"
+	"NOTICE Rαɠɳαɾöƙ : QUIT\r\n"
+	"NOTICE Rαɠɳαɾöƙ : INVITE (channel_name) (nick_name)\r\n"
+	"NOTICE Rαɠɳαɾöƙ : MODE (channel_name) (+/-)(o / i / m / v / k / l / t / b)\r\n"
+	"NOTICE Rαɠɳαɾöƙ :              \r\n"
+	"NOTICE Rαɠɳαɾöƙ :              BOT :\r\n"
+	"NOTICE Rαɠɳαɾöƙ : some IRC Clients ignore single slash (/) so use /command or //command\r\n"
+	"NOTICE Rαɠɳαɾöƙ : /help\r\n"
+	"NOTICE Rαɠɳαɾöƙ : /whois (nick_name)\r\n"
+	"NOTICE Rαɠɳαɾöƙ : /logtime\r\n"
+	"NOTICE Rαɠɳαɾöƙ : /list\r\n"
+	"NOTICE Rαɠɳαɾöƙ : /owners\r\n"
+	"NOTICE Rαɠɳαɾöƙ : /users\r\n";
+	this->send_msg(cl, format);
 }
