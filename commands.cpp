@@ -87,7 +87,7 @@ void    Server::_NOTICE(string s_token, Client * client, string msg)
                 send_msg(receiver, letter);
             }
         }
-		free(msg_token);
+		// free(msg_token);
     }
 }
 
