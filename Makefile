@@ -13,15 +13,20 @@ OBJ = $(SRC:.cpp=.o)
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	$(CC) $(FLAGS) $(OBJ) -o $(NAME)
+	@echo "\n🔨\033[36mBuilding" $@"\033[0m🔨"
+	@$(CC) $(FLAGS) $(OBJ) -o $(NAME)
+	@echo "\033[36mServer is ready to run ✅\033[0m"
 
 %.o : %.cpp $(HEADERS)
-	$(CC) $(FLAGS) -o $@ -c $<
+	@echo "\033[92mCompiling" $< "\033[0m"
+	@$(CC) $(FLAGS) -o $@ -c $<
 
 clean :
-	rm -f $(OBJ)
+	@echo "\033[35mDeleting" $(OBJ) "\033[0m"
+	@rm -f $(OBJ)
 
 fclean : clean
-	rm -f $(NAME)
+	@echo "\033[31mDeleting" $(NAME) "\033[0m"
+	@rm -f $(NAME)
 
 re : fclean all
