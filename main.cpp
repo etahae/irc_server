@@ -147,6 +147,7 @@ int main(int argc, char **argv)
 	char buffer[ARG_MAX];
 
 	signal(SIGINT, sigquit_handler);
+	signal(SIGQUIT, sigquit_handler);
 
 	cout << "\033[0;32mServer is up !\033[0m" << endl;
 

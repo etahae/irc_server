@@ -55,7 +55,7 @@ namespace irc
 				this->password = argv[2];
 				this->port_number = std::atoi(argv[1]);
 				this->_socket = socket(AF_INET, SOCK_STREAM, 0);
-									//  IPV4,   TCP ,     tcp default
+									//  IPV4,   establish two-way communication stream,     default tcp or udp
 				if (this->_socket < 0)
 					return (this->fatal_error("socket failure"));
 				bzero((char *) &this->server_addr, sizeof(this->server_addr));
