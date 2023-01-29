@@ -7,13 +7,16 @@ void	Server::_o(char sign, string _channel, string _nick, Client * _client)
     std::map<string, Channel *>::iterator chan = this->channels.find(_channel);
     if (chan != this->channels.end())
     {
+        if (this->find_client(_nick) == nullptr)
+            return (send_msg(_client, ERR_NOSUCHNICK(_client->nick)));
         std::map<string, Client *>::iterator oper = chan->second->operators.find(_client->nick);
         if (oper != chan->second->operators.end())
         {
+            cout << "here" << endl;
             if (sign == '+')
             {
                 chan->second->operators.insert(std::pair<string, Client *> (_nick, find_client(_nick)));
-                chan->second->moderators.insert(std::pair<string, Client *> (_nick, find_client(_nick)));
+                // chan->second->moderators.insert(std::pair<string, Client *> (_nick, find_client(_nick)));
                 send_msg(find_client(_nick), ":" + _client->user_info() + " PRIVMSG " + _nick + " : You just got oper_privelage at " + _channel);
             }
             else if (sign == '-')
@@ -76,6 +79,8 @@ void	Server::_v(char sign, string _channel, string _nick, Client * _client)
     std::map<string, Channel *>::iterator chan = this->channels.find(_channel);
     if (chan != this->channels.end())
     {
+        if (this->find_client(_nick) == nullptr)
+            return (send_msg(_client, ERR_NOSUCHNICK(_client->nick)));
         std::map<string, Client *>::iterator oper = chan->second->operators.find(_client->nick);
         if (oper != chan->second->operators.end())
         {
