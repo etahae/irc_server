@@ -127,8 +127,11 @@ void	Server::_l(char sign, string _channel, string _limit, Client * _client)
         {
             if (sign == '+')
             {
+                for (size_t i = 0; i < _limit.size(); i++)
+                    if (!isdigit(_limit[i]))
+                        return ;
                 if ((int)chan->second->members.size() < std::stoi(_limit))
-                    chan->second->max_numbers = std::stoi(_limit);
+                    chan->second->max_numbers = std::stoi(_limit);   
             }
             else if (sign == '-')
                 return;
