@@ -12,7 +12,6 @@ void	Server::_o(char sign, string _channel, string _nick, Client * _client)
         std::map<string, Client *>::iterator oper = chan->second->operators.find(_client->nick);
         if (oper != chan->second->operators.end())
         {
-            cout << "here" << endl;
             if (sign == '+')
             {
                 chan->second->operators.insert(std::pair<string, Client *> (_nick, find_client(_nick)));
