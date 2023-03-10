@@ -8,8 +8,15 @@
 #include <unistd.h>
 #include <vector>
 #include <cstring>
+#include <algorithm>
+#include <signal.h>
 #include "server.hpp"
+#include <limits.h>
 // #include "channel.hpp"
+
+#ifndef ARG_MAX
+#define ARG_MAX 4096
+#endif
 
 using std::string;
 using std::cout;

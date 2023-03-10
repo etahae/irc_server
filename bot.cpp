@@ -72,9 +72,6 @@ void	Server::owners(Client *cl)
 
 void	Server::logtime(Client *cl)
 {
-	tm		*ltm;
-	time_t now = time(0);
-	ltm = localtime(&now);
 	long	time_loged_second = (time(NULL) - cl->start);
 
 	int minute = time_loged_second / 60;

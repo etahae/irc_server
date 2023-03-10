@@ -4,7 +4,7 @@ CC = c++
 
 SRC = server.cpp mod_flags.cpp main.cpp commands.cpp bot.cpp
 
-FLAGS = -Wall -Wextra -Werror -std=c++98
+FLAGS = -Wall -Wextra -Werror 
 
 HEADERS = channel.hpp client.hpp server.hpp
 
