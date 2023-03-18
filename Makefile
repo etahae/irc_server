@@ -2,11 +2,11 @@ NAME = ircserv
 
 CC = c++
 
-SRC = server.cpp mod_flags.cpp main.cpp commands.cpp bot.cpp
+SRC = ./srcs/server.cpp ./srcs/mod_flags.cpp ./srcs/main.cpp ./srcs/commands.cpp ./srcs/bot.cpp
 
 FLAGS = -Wall -Wextra -Werror 
 
-HEADERS = channel.hpp client.hpp server.hpp
+HEADERS = ./srcs/channel.hpp ./srcs/client.hpp ./srcs/server.hpp
 
 OBJ = $(SRC:.cpp=.o)
 
